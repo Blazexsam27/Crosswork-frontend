@@ -1,5 +1,6 @@
 "use client";
 
+import { setInLocalStorage } from "@/utils/webstorage.utls";
 import type React from "react";
 
 import { useState } from "react";
@@ -66,6 +67,11 @@ export default function LoginForm() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // handle authentication using OAuth
+  const loginWithOAuth = async (provider: string) => {
+    window.location.href = `http://localhost:8080/api/auth/${provider}`;
   };
 
   return (
@@ -208,6 +214,7 @@ export default function LoginForm() {
           <button
             type="button"
             className="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            onClick={() => loginWithOAuth("google")}
           >
             <svg
               className="h-5 w-5"
@@ -237,6 +244,7 @@ export default function LoginForm() {
           <button
             type="button"
             className="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            onClick={() => loginWithOAuth("github")}
           >
             <svg
               className="h-5 w-5"
