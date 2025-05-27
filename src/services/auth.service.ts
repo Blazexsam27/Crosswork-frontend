@@ -1,9 +1,10 @@
+import type { UserRegister } from "@/types/features/authTypes";
 import axios from "../config/axios.config";
 
 class AuthService {
   login = async (email: string, password: string) => {
     try {
-      const response = await axios.post("/auth/login", {
+      const response = await axios.post("/api/auth/login", {
         email,
         password,
       });
@@ -14,12 +15,9 @@ class AuthService {
     }
   };
 
-  signup = async (email: string, password: string) => {
+  signup = async (credentials: UserRegister) => {
     try {
-      const response = await axios.post("/auth/signup", {
-        email,
-        password,
-      });
+      const response = await axios.post("/api/auth/register", credentials);
       return response.data;
     } catch (error: any) {
       throw new Error(error);

@@ -4,10 +4,12 @@ import {
   getFromLocalStorage,
   setInLocalStorage,
 } from "@/utils/webstorage.utls";
-import type { AuthInitialStateType } from "@/types/features/authTypes";
+import type {
+  AuthInitialStateType,
+  UserRegister,
+} from "@/types/features/authTypes";
 
 const initialState: AuthInitialStateType = {
-  user: null,
   token: getFromLocalStorage("authToken") || null,
   isAuthenticated: !!getFromLocalStorage("authToken"),
   loading: false,
@@ -17,14 +19,19 @@ const initialState: AuthInitialStateType = {
 export const login = createAsyncThunk(
   "auth/login",
   async (credentials: { email: string; password: string }) => {
-    return await authService.login(credentials.email, credentials.password);
+    const response = await authService.login(
+      credentials.email,
+      credentials.password
+    );
+    setInLocalStorage("authToken", response.token);
+    return response;
   }
 );
 
 export const signup = createAsyncThunk(
   "auth/signup",
-  async (credentials: { email: string; password: string }) => {
-    return await authService.signup(credentials.email, credentials.password);
+  async (credentials: UserRegister) => {
+    return await authService.signup(credentials);
   }
 );
 
@@ -33,10 +40,9 @@ const authSlice = createSlice({
   initialState: initialState,
   reducers: {
     logout: (state) => {
-      state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      setInLocalStorage("authToken", null);
+      localStorage.clear();
     },
   },
 
@@ -48,7 +54,6 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.isAuthenticated = true;
         state.loading = false;
-        state.user = action.payload.user;
         state.token = action.payload.token;
         setInLocalStorage("authToken", action.payload.token);
       })

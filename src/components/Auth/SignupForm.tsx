@@ -1,19 +1,22 @@
 "use client";
 
-import { setInLocalStorage } from "@/utils/webstorage.utls";
 import type React from "react";
 
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { signup } from "../../features/auth/authSlice";
+import { useAppDispatch } from "../../hooks/hooks";
 
 export default function SignupForm() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     password: "",
     confirmPassword: "",
+    authProvider: "",
   });
   const [errors, setErrors] = useState({
     name: "",
@@ -35,11 +38,6 @@ export default function SignupForm() {
   const validateForm = () => {
     let valid = true;
     const newErrors = { ...errors };
-
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-      valid = false;
-    }
 
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
@@ -72,12 +70,13 @@ export default function SignupForm() {
     if (!validateForm()) return;
 
     setIsLoading(true);
+    // setup auth provider to default
+    formData.authProvider = "local";
+    const { confirmPassword, ...signupData } = formData;
 
     // Simulate API call
     try {
-      // Replace with actual signup logic
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Signup successful", formData);
+      dispatch(signup(signupData));
       navigate("/login");
     } catch (error) {
       console.error("Signup failed", error);
@@ -99,6 +98,28 @@ export default function SignupForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label
+            htmlFor="name"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
+            Name
+          </label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            value={formData.name}
+            onChange={handleChange}
+            className={`w-full px-4 py-3 rounded-xl border ${
+              errors.email ? "border-red-500" : "border-gray-300"
+            } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200`}
+            placeholder="you@example.com"
+          />
+          {errors.email && (
+            <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+          )}
+        </div>
         <div>
           <label
             htmlFor="email"
