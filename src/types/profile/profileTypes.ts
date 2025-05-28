@@ -9,7 +9,7 @@ export interface Room {
 }
 
 export interface UserProfile {
-  _id?: string;
+  _id: string;
   name: string;
   email: string;
   profilePic: string;

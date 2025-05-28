@@ -1,5 +1,5 @@
-import type { UserType } from "@/types/user/userTypes";
 import axios from "../config/axios.config";
+import type { UserProfile } from "@/types/profile/profileTypes";
 
 class UserService {
   getUser = async () => {
@@ -21,7 +21,7 @@ class UserService {
     }
   };
 
-  updateUser = async (updatedData: Partial<UserType>) => {
+  updateUser = async (updatedData: Partial<UserProfile>) => {
     try {
       const response = await axios.put("/api/users/update-user", updatedData);
       return response.data;

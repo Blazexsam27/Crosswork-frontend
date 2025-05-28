@@ -10,6 +10,7 @@ import UserProfile from "./views/UserProfile";
 import Forums from "./views/Forums";
 import Connect from "./views/Connect";
 import "./App.css";
+import VideoRoom from "./views/VideoRoom";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="/profile" element={<UserProfile />}></Route>
           <Route path="/forum" element={<Forums />}></Route>
           <Route path="/connect" element={<Connect />}></Route>
+          <Route path="/videoroom" element={<VideoRoom />}></Route>
         </Routes>
       </BrowserRouter>
     </Provider>

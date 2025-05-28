@@ -20,6 +20,8 @@ import { useAppDispatch } from "@/hooks/hooks";
 import notificationService from "@/services/notification.service";
 import { Button } from "@/components/ui/button";
 import connectService from "@/services/connect.service";
+import { toast, ToastContainer } from "react-toastify";
+import type { UserType } from "@/types/user/userTypes";
 const mockRooms: Room[] = [
   {
     id: "1",
@@ -55,6 +57,7 @@ export default function ProfileView() {
   const [activeSection, setActiveSection] = useState("details");
   const [invites, setInvites] = useState<UserProfile[]>([
     {
+      _id: "",
       name: "",
       email: "",
       profilePic: "",
@@ -67,6 +70,7 @@ export default function ProfileView() {
   ]);
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState<UserProfile>({
+    _id: "",
     name: "",
     email: "",
     profilePic: "",
@@ -599,9 +603,29 @@ export default function ProfileView() {
   );
 
   const renderNotificationSection = () => {
+    async function handleAcceptInvite(_id: string): Promise<void> {
+      // Handle accept invite
+      try {
+        const response = await connectService.acceptRequest(_id, userData._id);
+        if (response) toast("Invitation Accepted !");
+      } catch (error) {
+        console.error("Error while accepting invite:", error);
+      }
+    }
+
+    async function handleDeclineInvite(_id: string): Promise<void> {
+      try {
+        const response = await connectService.declineRequest(_id, userData._id);
+        if (response) toast("Invitation Declined!");
+      } catch (error) {
+        console.error("Error while declining invite:", error);
+      }
+    }
+
     return (
       <div className="bg-white rounded-2xl shadow-lg p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Notifications</h2>
+        <ToastContainer />
         {invites.length > 0 ? (
           <div className="space-y-4">
             {invites.map((invite) => (
@@ -613,8 +637,18 @@ export default function ProfileView() {
                   You got a connection request from: <b>{invite.name}</b>
                 </p>
                 <div className="flex justify-end items-center gap-2">
-                  <Button variant={"gradient"}>Accept</Button>
-                  <Button className="bg-red-700">Decline</Button>
+                  <Button
+                    variant={"gradient"}
+                    onClick={() => handleAcceptInvite(invite._id)}
+                  >
+                    Accept
+                  </Button>
+                  <Button
+                    className="bg-red-700"
+                    onClick={() => handleDeclineInvite(invite._id)}
+                  >
+                    Decline
+                  </Button>
                 </div>
               </div>
             ))}

@@ -5,7 +5,7 @@ export type UserInitialStateType = {
 };
 
 export type UserType = {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   password: string;
@@ -13,3 +13,22 @@ export type UserType = {
   updatedAt: Date;
   profilePic: string;
 };
+
+export interface Student {
+  _id: string;
+  name: string;
+  profilePic: string;
+  interests: string[];
+  subjects: string[];
+  languages: string[];
+  bio: string;
+}
+
+export interface StudentCardProps {
+  student: Student;
+  onConnect: (id: string) => void;
+  onCancelRequest: (id: string) => void;
+  onViewProfile: (student: Student) => void;
+  isCompact?: boolean;
+  connectionStates: Record<string, "none" | "pending" | "connected">;
+}
