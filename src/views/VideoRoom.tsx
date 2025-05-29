@@ -1,8 +1,7 @@
 "use client";
 
 import type React from "react";
-
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import {
   Mic,
   MicOff,
@@ -19,120 +18,45 @@ import {
   Grid3X3,
   Presentation,
 } from "lucide-react";
-
-interface Participant {
-  id: string;
-  name: string;
-  avatar: string;
-  isMuted: boolean;
-  isVideoOn: boolean;
-  isPresenting: boolean;
-  isHost: boolean;
-  connectionQuality: "excellent" | "good" | "poor";
-}
-
-interface ChatMessage {
-  id: string;
-  userId: string;
-  userName: string;
-  message: string;
-  timestamp: string;
-  type: "message" | "system";
-}
-
-const mockParticipants: Participant[] = [
-  {
-    id: "1",
-    name: "You",
-    avatar: "/placeholder.svg?height=40&width=40",
-    isMuted: false,
-    isVideoOn: true,
-    isPresenting: false,
-    isHost: true,
-    connectionQuality: "excellent",
-  },
-  {
-    id: "2",
-    name: "Sarah Chen",
-    avatar: "/placeholder.svg?height=40&width=40",
-    isMuted: false,
-    isVideoOn: true,
-    isPresenting: false,
-    isHost: false,
-    connectionQuality: "good",
-  },
-  {
-    id: "3",
-    name: "Marcus Johnson",
-    avatar: "/placeholder.svg?height=40&width=40",
-    isMuted: true,
-    isVideoOn: false,
-    isPresenting: false,
-    isHost: false,
-    connectionQuality: "excellent",
-  },
-  {
-    id: "4",
-    name: "Emily Rodriguez",
-    avatar: "/placeholder.svg?height=40&width=40",
-    isMuted: false,
-    isVideoOn: true,
-    isPresenting: true,
-    isHost: false,
-    connectionQuality: "good",
-  },
-];
-
-const mockChatMessages: ChatMessage[] = [
-  {
-    id: "1",
-    userId: "2",
-    userName: "Sarah Chen",
-    message: "Hey everyone! Ready to start our study session?",
-    timestamp: "10:30 AM",
-    type: "message",
-  },
-  {
-    id: "2",
-    userId: "system",
-    userName: "System",
-    message: "Marcus Johnson joined the room",
-    timestamp: "10:31 AM",
-    type: "system",
-  },
-  {
-    id: "3",
-    userId: "3",
-    userName: "Marcus Johnson",
-    message: "Sorry I'm late! Had some connection issues",
-    timestamp: "10:32 AM",
-    type: "message",
-  },
-  {
-    id: "4",
-    userId: "4",
-    userName: "Emily Rodriguez",
-    message: "No worries! I'll share my screen to show the presentation",
-    timestamp: "10:33 AM",
-    type: "message",
-  },
-];
+import type {
+  ChatMessage,
+  Participant,
+} from "@/types/videoroom/videoRoomTypes";
+import { useSelector } from "react-redux";
+import type { RootState } from "../store";
+import { cleanupAllPeers, createPeerConnection } from "@/config/peerConnection";
+import { useLocation } from "react-router-dom";
+import {
+  getFromLocalStorage,
+  getFromSessionStorage,
+} from "@/utils/webstorage.utls";
+import ParticipantVideo from "@/components/widgets/PatricipantVideo";
 
 export default function VideoChatRoom() {
-  const [participants, setParticipants] =
-    useState<Participant[]>(mockParticipants);
-  const [chatMessages, setChatMessages] =
-    useState<ChatMessage[]>(mockChatMessages);
+  const location = useLocation();
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOn, setIsVideoOn] = useState(true);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isParticipantsOpen, setIsParticipantsOpen] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
+  // const [isFullscreen, setIsFullscreen] = useState(false);
   const [viewMode, setViewMode] = useState<"grid" | "speaker">("grid");
   const [isHandRaised, setIsHandRaised] = useState(false);
-  const [roomId] = useState("room-abc-123");
+  const { roomId } = getFromSessionStorage("latestRoom");
   const [isRecording, setIsRecording] = useState(false);
+  const user = getFromLocalStorage("user");
+
+  // socket and webrtc states
+
+  const { socket, isConnected } = useSelector(
+    (state: RootState) => state.socket
+  );
+  const [peers, setPeers] = useState<Record<string, RTCPeerConnection>>({});
+  const localStream = useRef<MediaStream | null>(null);
+  const localVideoRef = useRef<HTMLVideoElement>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement>(null);
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,18 +78,78 @@ export default function VideoChatRoom() {
     setNewMessage("");
   };
 
-  const toggleMute = () => {
-    setIsMuted(!isMuted);
-    setParticipants((prev) =>
-      prev.map((p) => (p.id === "1" ? { ...p, isMuted: !isMuted } : p))
-    );
+  const toggleMute = async () => {
+    try {
+      // Stop existing tracks to avoid memory leaks
+      if (localStream.current) {
+        localStream.current.getAudioTracks().forEach((track) => track.stop());
+      }
+
+      const newMutedState = !isMuted;
+      setIsMuted(newMutedState);
+
+      // Update local state
+      setParticipants((prev) =>
+        prev.map((p) =>
+          p.id === user._id ? { ...p, isMuted: newMutedState } : p
+        )
+      );
+
+      // Get new media stream
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: isVideoOn,
+        audio: !newMutedState, // Use the new state
+      });
+
+      localStream.current = stream;
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+
+      // Emit to other participants (via WebSocket or similar)
+      socket?.emit("audio-toggle", {
+        userId: user._id,
+        isMuted: newMutedState,
+      });
+    } catch (error) {
+      console.error("Error toggling audio:", error);
+    }
   };
 
-  const toggleVideo = () => {
-    setIsVideoOn(!isVideoOn);
-    setParticipants((prev) =>
-      prev.map((p) => (p.id === "1" ? { ...p, isVideoOn: !isVideoOn } : p))
-    );
+  const toggleVideo = async () => {
+    try {
+      // Stop existing tracks
+      if (localStream.current) {
+        localStream.current.getVideoTracks().forEach((track) => track.stop());
+      }
+
+      const newVideoState = !isVideoOn;
+      setIsVideoOn(newVideoState);
+
+      setParticipants((prev) =>
+        prev.map((p) =>
+          p.id === user._id ? { ...p, isVideoOn: newVideoState } : p
+        )
+      );
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: newVideoState, // Use the new state
+        audio: !isMuted,
+      });
+
+      localStream.current = stream;
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+
+      // Emit to other participants
+      socket?.emit("video-toggle", {
+        userId: user._id,
+        isVideoOn: newVideoState,
+      });
+    } catch (error) {
+      console.error("Error toggling video:", error);
+    }
   };
 
   const toggleHandRaise = () => {
@@ -173,7 +157,7 @@ export default function VideoChatRoom() {
   };
 
   const copyRoomLink = () => {
-    navigator.clipboard.writeText(`https://crosswork.com/room/${roomId}`);
+    navigator.clipboard.writeText(`http://localhost:5173/videoroom/${roomId}`);
     // You could add a toast notification here
   };
 
@@ -190,83 +174,138 @@ export default function VideoChatRoom() {
     }
   };
 
-  const ParticipantVideo = ({
-    participant,
-    isMain = false,
-  }: {
-    participant: Participant;
-    isMain?: boolean;
-  }) => (
-    <div
-      className={`relative bg-gray-900 rounded-xl overflow-hidden ${
-        isMain ? "aspect-video" : "aspect-square"
-      } group`}
-    >
-      {participant.isVideoOn ? (
-        <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-          <img
-            src={participant.avatar || "/placeholder.svg"}
-            alt={participant.name}
-            className="w-16 h-16 rounded-full object-cover"
-          />
-        </div>
-      ) : (
-        <div className="w-full h-full bg-gray-800 flex items-center justify-center">
-          <div className="text-center">
-            <img
-              src={participant.avatar || "/placeholder.svg"}
-              alt={participant.name}
-              className="w-16 h-16 rounded-full object-cover mx-auto mb-2"
-            />
-            <p className="text-white text-sm">{participant.name}</p>
-          </div>
-        </div>
-      )}
+  useEffect(() => {
+    if (!socket || !isConnected) return;
 
-      {/* Participant Info Overlay */}
-      <div className="absolute bottom-2 left-2 flex items-center space-x-2">
-        <div className="flex items-center space-x-1 bg-black bg-opacity-50 rounded-full px-2 py-1">
-          <div
-            className={`w-2 h-2 rounded-full ${getConnectionQualityColor(
-              participant.connectionQuality
-            )}`}
-          ></div>
-          <span className="text-white text-xs font-medium">
-            {participant.name}
-          </span>
-          {participant.isHost && (
-            <span className="text-yellow-400 text-xs">👑</span>
-          )}
-        </div>
-      </div>
+    const initLocalStream = async () => {
+      const { userName, isMuted, isVideoOn, user } = location.state;
+      // if user already in participants state then simply return;
+      if (participants.find((p) => p.id === user._id)) return;
 
-      {/* Status Icons */}
-      <div className="absolute top-2 right-2 flex space-x-1">
-        {participant.isMuted && (
-          <div className="bg-red-500 rounded-full p-1">
-            <MicOff className="w-3 h-3 text-white" />
-          </div>
-        )}
-        {participant.isPresenting && (
-          <div className="bg-blue-500 rounded-full p-1">
-            <Monitor className="w-3 h-3 text-white" />
-          </div>
-        )}
-        {isHandRaised && participant.id === "1" && (
-          <div className="bg-yellow-500 rounded-full p-1">
-            <Hand className="w-3 h-3 text-white" />
-          </div>
-        )}
-      </div>
+      setParticipants((prev) => [
+        ...prev,
+        {
+          id: user._id,
+          name: userName,
+          avatar: "/your-avatar.png",
+          isMuted,
+          isVideoOn,
+          isHost: true, // if applicable
+          connectionQuality: "excellent",
+          isPresenting: false,
+        },
+      ]);
 
-      {/* Hover Controls */}
-      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-200 flex items-center justify-center opacity-0 group-hover:opacity-100">
-        <button className="bg-white bg-opacity-20 rounded-full p-2 text-white hover:bg-opacity-30 transition-colors">
-          <MoreVertical className="w-4 h-4" />
-        </button>
-      </div>
-    </div>
-  );
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      localStream.current = stream;
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+      }
+
+      socket.emit("join-room", { roomId, user });
+
+      socket.on("user-joined", async ({ userId }: { userId: string }) => {
+        const peer = createPeerConnection(socket, userId, handleTrack);
+        localStream.current!.getTracks().forEach((track) => {
+          peer.addTrack(track, localStream.current!);
+        });
+
+        const offer = await peer.createOffer();
+        await peer.setLocalDescription(offer);
+
+        socket.emit("offer", {
+          to: userId,
+          offer,
+        });
+
+        setPeers((prev) => ({ ...prev, [userId]: peer }));
+      });
+
+      socket.on("offer", async ({ from, offer }) => {
+        const peer = createPeerConnection(socket, from, handleTrack);
+        localStream.current!.getTracks().forEach((track) => {
+          peer.addTrack(track, localStream.current!);
+        });
+
+        await peer.setRemoteDescription(new RTCSessionDescription(offer));
+        const answer = await peer.createAnswer();
+        await peer.setLocalDescription(answer);
+
+        socket.emit("answer", {
+          to: from,
+          answer,
+        });
+
+        setPeers((prev) => ({ ...prev, [from]: peer }));
+      });
+
+      socket.on("answer", async ({ from, answer }) => {
+        await peers[from]?.setRemoteDescription(
+          new RTCSessionDescription(answer)
+        );
+      });
+
+      socket.on("ice-candidate", async ({ from, candidate }) => {
+        if (peers[from]) {
+          await peers[from].addIceCandidate(new RTCIceCandidate(candidate));
+        }
+      });
+    };
+
+    const handleTrack = (event: RTCTrackEvent) => {
+      const remoteVideo = document.getElementById(
+        `video-${event.track.id}`
+      ) as HTMLVideoElement;
+      if (remoteVideo) {
+        remoteVideo.srcObject = event.streams[0];
+      } else {
+        const newVideo = document.createElement("video");
+        newVideo.id = `video-${event.track.id}`;
+        newVideo.autoplay = true;
+        newVideo.srcObject = event.streams[0];
+        document.getElementById("remote-videos")?.appendChild(newVideo);
+      }
+    };
+
+    initLocalStream();
+
+    return () => {
+      socket.emit("leave-room", { roomId });
+      Object.values(peers).forEach((peer) => peer.close());
+    };
+  }, [socket, isConnected]);
+
+  function leaveRoom(): void {
+    try {
+      // 1. Clean up all peer connections
+      cleanupAllPeers(peers, setPeers);
+
+      // 2. Clean up media streams
+      if (localStream.current) {
+        localStream.current.getTracks().forEach((track) => track.stop());
+        localStream.current = null;
+      }
+
+      // 3. Remove video elements
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = null;
+      }
+      if (remoteVideoRef.current) {
+        remoteVideoRef.current.innerHTML = "";
+      }
+
+      // 4. Notify server and other participants
+      socket?.emit("leave-room", { roomId });
+
+      // 5. Update local state
+      setParticipants([]);
+    } catch (error) {
+      console.error("Error leaving room:", error);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
@@ -312,6 +351,7 @@ export default function VideoChatRoom() {
                 <ParticipantVideo
                   key={participant.id}
                   participant={participant}
+                  videoRef={localVideoRef}
                 />
               ))}
             </div>
@@ -323,11 +363,12 @@ export default function VideoChatRoom() {
                   participant={
                     participants.find((p) => p.isPresenting) || participants[0]
                   }
+                  videoRef={remoteVideoRef}
                   isMain={true}
                 />
               </div>
               {/* Thumbnail Strip */}
-              <div className="flex space-x-2 overflow-x-auto pb-2">
+              {/*    <div className="flex space-x-2 overflow-x-auto pb-2">
                 {participants
                   .filter((p) => !p.isPresenting)
                   .map((participant) => (
@@ -335,7 +376,7 @@ export default function VideoChatRoom() {
                       <ParticipantVideo participant={participant} />
                     </div>
                   ))}
-              </div>
+              </div> */}
             </div>
           )}
         </div>
@@ -601,7 +642,10 @@ export default function VideoChatRoom() {
             </button>
 
             <button className="p-3 bg-red-600 hover:bg-red-700 rounded-full transition-colors">
-              <PhoneOff className="w-5 h-5 text-white" />
+              <PhoneOff
+                className="w-5 h-5 text-white"
+                onClick={() => leaveRoom()}
+              />
             </button>
           </div>
         </div>
