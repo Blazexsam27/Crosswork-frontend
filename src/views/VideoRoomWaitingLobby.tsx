@@ -16,15 +16,13 @@ import {
 import {
   getFromLocalStorage,
   getFromSessionStorage,
+  setInSessionStorage,
 } from "@/utils/webstorage.utls";
-import { useDispatch } from "react-redux";
-import { initSocket } from "@/features/socket/socketSlice";
 
 export default function WaitingLobby() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOn, setIsVideoOn] = useState(true);
+  const [muted, setMuted] = useState(false);
+  const [videoOn, setVideoOn] = useState(true);
   const [userName, setUserName] = useState("John Doe");
   const [isJoining, setIsJoining] = useState(false);
   const [waitingTime, setWaitingTime] = useState(0);
@@ -38,7 +36,7 @@ export default function WaitingLobby() {
   const { roomId, roomName, host } = getFromSessionStorage("latestRoom");
 
   useEffect(() => {
-    dispatch(initSocket());
+    // dispatch(initSocket());
     const timer = setInterval(() => {
       setWaitingTime((prev) => prev + 1);
     }, 1000);
@@ -63,8 +61,8 @@ export default function WaitingLobby() {
     setIsJoining(true);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        audio: !isMuted,
-        video: isVideoOn,
+        audio: !muted,
+        video: videoOn,
       });
       setMediaStream(stream);
 
@@ -74,14 +72,13 @@ export default function WaitingLobby() {
         // Stop tracks here if you want, or leave running for next page to handle
         // stream.getTracks().forEach(track => track.stop());
 
-        navigate(`/videoroom/${roomId}`, {
-          state: {
-            userName,
-            isMuted,
-            isVideoOn,
-            user,
-          },
+        setInSessionStorage("user_video_room", {
+          userName,
+          muted,
+          videoOn,
+          user,
         });
+        navigate(`/videoroom/${roomId}`);
       }, 2000);
     } catch (err) {
       alert(
@@ -116,7 +113,7 @@ export default function WaitingLobby() {
 
               {/* Video Preview Area */}
               <div className="relative bg-gray-900 rounded-xl overflow-hidden aspect-video mb-4">
-                {isVideoOn && mediaStream ? (
+                {videoOn && mediaStream ? (
                   <video
                     ref={videoRef}
                     muted
@@ -139,7 +136,7 @@ export default function WaitingLobby() {
                   </div>
                 )}
 
-                {!isVideoOn && (
+                {!videoOn && (
                   <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
                     <VideoOff className="w-12 h-12 text-gray-400 mx-auto mb-2" />
                     <p className="text-gray-400 absolute bottom-4">
@@ -150,7 +147,7 @@ export default function WaitingLobby() {
 
                 {/* Status Indicators */}
                 <div className="absolute bottom-4 left-4 flex space-x-2">
-                  {isMuted && (
+                  {muted && (
                     <div className="bg-red-500 rounded-full p-2">
                       <MicOff className="w-4 h-4 text-white" />
                     </div>
@@ -161,15 +158,15 @@ export default function WaitingLobby() {
               {/* Controls */}
               <div className="flex items-center justify-center space-x-4">
                 <button
-                  onClick={() => setIsMuted(!isMuted)}
+                  onClick={() => setMuted(!muted)}
                   className={`p-3 rounded-full transition-colors ${
-                    isMuted
+                    muted
                       ? "bg-red-100 text-red-600"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
-                  title={isMuted ? "Unmute" : "Mute"}
+                  title={muted ? "Unmute" : "Mute"}
                 >
-                  {isMuted ? (
+                  {muted ? (
                     <MicOff className="w-5 h-5" />
                   ) : (
                     <Mic className="w-5 h-5" />
@@ -177,15 +174,15 @@ export default function WaitingLobby() {
                 </button>
 
                 <button
-                  onClick={() => setIsVideoOn(!isVideoOn)}
+                  onClick={() => setVideoOn(!videoOn)}
                   className={`p-3 rounded-full transition-colors ${
-                    !isVideoOn
+                    !videoOn
                       ? "bg-red-100 text-red-600"
                       : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                   }`}
-                  title={isVideoOn ? "Turn off camera" : "Turn on camera"}
+                  title={videoOn ? "Turn off camera" : "Turn on camera"}
                 >
-                  {isVideoOn ? (
+                  {videoOn ? (
                     <Video className="w-5 h-5" />
                   ) : (
                     <VideoOff className="w-5 h-5" />

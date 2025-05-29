@@ -31,6 +31,8 @@ import {
   getFromSessionStorage,
 } from "@/utils/webstorage.utls";
 import ParticipantVideo from "@/components/widgets/PatricipantVideo";
+import { initSocket } from "@/features/socket/socketSlice";
+import { useDispatch } from "react-redux";
 
 export default function VideoChatRoom() {
   const location = useLocation();
@@ -57,7 +59,7 @@ export default function VideoChatRoom() {
   const localStream = useRef<MediaStream | null>(null);
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
-
+  const dispatch = useDispatch();
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -175,11 +177,14 @@ export default function VideoChatRoom() {
   };
 
   useEffect(() => {
+    dispatch(initSocket());
     if (!socket || !isConnected) return;
 
     const initLocalStream = async () => {
-      const { userName, isMuted, isVideoOn, user } = location.state;
-      // if user already in participants state then simply return;
+      const { userName, muted, videoOn, user } =
+        getFromSessionStorage("user_video_room");
+
+      // Skip if user already in participants
       if (participants.find((p) => p.id === user._id)) return;
 
       setParticipants((prev) => [
@@ -188,28 +193,42 @@ export default function VideoChatRoom() {
           id: user._id,
           name: userName,
           avatar: "/your-avatar.png",
-          isMuted,
-          isVideoOn,
-          isHost: true, // if applicable
+          isMuted: muted,
+          isVideoOn: videoOn,
+          isHost: true,
           connectionQuality: "excellent",
           isPresenting: false,
         },
       ]);
 
+      //  the value of videoOn and muted is coming from waiting lobby selection
+      setIsVideoOn(videoOn);
+      setIsMuted(muted);
+      // Get media stream
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: true,
-        audio: true,
+        video: videoOn,
+        audio: muted,
       });
       localStream.current = stream;
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
       }
 
+      // Rejoin room on reconnect
+      const handleReconnect = () => {
+        socket.emit("join-room", { roomId, user });
+      };
+
+      // Add event listeners
+      socket.on("reconnect", handleReconnect);
+
+      // Initial join
       socket.emit("join-room", { roomId, user });
 
-      socket.on("user-joined", async ({ userId }: { userId: string }) => {
+      // WebRTC Handlers
+      socket.on("user-joined", async ({ userId }) => {
         const peer = createPeerConnection(socket, userId, handleTrack);
-        localStream.current!.getTracks().forEach((track) => {
+        localStream.current?.getTracks().forEach((track) => {
           peer.addTrack(track, localStream.current!);
         });
 
@@ -226,7 +245,7 @@ export default function VideoChatRoom() {
 
       socket.on("offer", async ({ from, offer }) => {
         const peer = createPeerConnection(socket, from, handleTrack);
-        localStream.current!.getTracks().forEach((track) => {
+        localStream.current?.getTracks().forEach((track) => {
           peer.addTrack(track, localStream.current!);
         });
 
@@ -253,29 +272,58 @@ export default function VideoChatRoom() {
           await peers[from].addIceCandidate(new RTCIceCandidate(candidate));
         }
       });
+
+      // Handle page refresh/disconnect
+      const handleBeforeUnload = () => {
+        socket.emit("user-disconnecting", { roomId, userId: user._id });
+      };
+
+      window.addEventListener("beforeunload", handleBeforeUnload);
+
+      // Cleanup function
+      return () => {
+        window.removeEventListener("beforeunload", handleBeforeUnload);
+        socket.off("reconnect", handleReconnect);
+
+        // Only clean local resources, don't emit leave-room
+        cleanupAllPeers(peers, setPeers);
+        if (localStream.current) {
+          localStream.current.getTracks().forEach((track) => track.stop());
+          localStream.current = null;
+        }
+
+        // Clean socket listeners
+        socket.off("user-joined");
+        socket.off("offer");
+        socket.off("answer");
+        socket.off("ice-candidate");
+      };
     };
 
     const handleTrack = (event: RTCTrackEvent) => {
+      const stream = event.streams[0];
       const remoteVideo = document.getElementById(
-        `video-${event.track.id}`
+        `video-${stream.id}`
       ) as HTMLVideoElement;
-      if (remoteVideo) {
-        remoteVideo.srcObject = event.streams[0];
-      } else {
+
+      if (!remoteVideo) {
         const newVideo = document.createElement("video");
-        newVideo.id = `video-${event.track.id}`;
+        newVideo.id = `video-${stream.id}`;
         newVideo.autoplay = true;
-        newVideo.srcObject = event.streams[0];
+        newVideo.playsInline = true;
+        newVideo.srcObject = stream;
         document.getElementById("remote-videos")?.appendChild(newVideo);
+      } else {
+        remoteVideo.srcObject = stream;
       }
     };
 
     initLocalStream();
 
-    return () => {
-      socket.emit("leave-room", { roomId });
-      Object.values(peers).forEach((peer) => peer.close());
-    };
+    // return () => {
+    //   socket.emit("leave-room", { roomId });
+    //   Object.values(peers).forEach((peer) => peer.close());
+    // };
   }, [socket, isConnected]);
 
   function leaveRoom(): void {
@@ -302,6 +350,8 @@ export default function VideoChatRoom() {
 
       // 5. Update local state
       setParticipants([]);
+
+      window.location.href = "/";
     } catch (error) {
       console.error("Error leaving room:", error);
     }
