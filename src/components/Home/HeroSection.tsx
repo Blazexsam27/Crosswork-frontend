@@ -24,19 +24,19 @@ export default function HeroSection() {
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <button
-                className="px-16 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+                className="px-8  bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
                 onClick={() => navigate("/signup")}
               >
                 Get Started
               </button>
-              <button className="px-16 py-4 border-2 border-gray-300 text-slate-50 font-semibold rounded-xl hover:border-gray-400 hover:bg-gray-50 transition-all duration-300">
+              <button className="px-8 py-2 border-2 border-gray-300 text-slate-50 bg-slate-700 font-semibold rounded-xl hover:border-gray-400 hover:bg-gray-900 transition-all duration-300">
                 Learn More
               </button>
             </div>
           </div>
 
           {/* Right Column - Abstract Pattern */}
-          <div className="relative h-96 lg:h-[500px] overflow-hidden bg-slate-100">
+          <div className="relative h-96 lg:h-[500px] overflow-hidden bg-slate-100 mt-8">
             {/* Main container for the pattern */}
             <div className="absolute inset-0 flex items-center justify-center">
               {/* Floating geometric shapes */}

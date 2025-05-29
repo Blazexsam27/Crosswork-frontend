@@ -1,13 +1,17 @@
 "use client";
 
-import { setInLocalStorage } from "@/utils/webstorage.utls";
 import type React from "react";
 
 import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { login } from "../../features/auth/authSlice";
+import { useAppDispatch } from "@/hooks/hooks";
+import { getUser } from "@/features/user/userSlice";
+import { getFromLocalStorage } from "@/utils/webstorage.utls";
 
 export default function LoginForm() {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
@@ -58,10 +62,9 @@ export default function LoginForm() {
 
     // Simulate API call
     try {
-      // Replace with actual login logic
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Login successful", formData);
-      navigate("/dashboard");
+      await dispatch(login(formData));
+      dispatch(getUser());
+      navigate("/");
     } catch (error) {
       console.error("Login failed", error);
     } finally {

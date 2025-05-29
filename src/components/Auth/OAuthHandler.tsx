@@ -18,7 +18,7 @@ function OAuthHandler() {
       // get user data and save it to local storage
       dispatch(getUser());
     }
-    navigate("/");
+    window.location.href = "/";
   }, []);
 
   return <div></div>;

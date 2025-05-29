@@ -5,7 +5,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 export const getUser = createAsyncThunk("user/getUser", async () => {
   const result = await userService.getUser();
-  console.log("user", result);
   setInLocalStorage("user", result);
   return result;
 });
