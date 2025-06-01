@@ -7,7 +7,7 @@ import {
   MicOff,
   Video,
   VideoOff,
-  Settings,
+  // Settings,
   Users,
   Clock,
   Copy,
@@ -18,6 +18,7 @@ import {
   getFromSessionStorage,
   setInSessionStorage,
 } from "@/utils/webstorage.utls";
+import roomService from "@/services/room.service";
 
 export default function WaitingLobby() {
   const navigate = useNavigate();
@@ -33,15 +34,34 @@ export default function WaitingLobby() {
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
   const user = getFromLocalStorage("user");
 
-  const { roomId, roomName, host } = getFromSessionStorage("latestRoom");
+  const [room, setRoom] = useState({
+    roomId: "",
+    roomName: "",
+    host: "",
+  });
+
+  // const { roomId, roomName, host } = getFromSessionStorage("latestRoom");
+  // if user came using room link then set the data accordingly
+  const roomIdFromUrl = window.location.pathname.split("/")[2];
+
+  const getRoom = async () => {
+    const room = await roomService.getRoomById(roomIdFromUrl);
+    console.log("rrr", room);
+    setRoom({
+      roomId: room._id,
+      roomName: room.name,
+      host: room.host,
+    });
+    setInSessionStorage("latestRoom", {
+      roomId: room._id,
+      roomName: room.name,
+      host: room.host,
+    });
+  };
 
   useEffect(() => {
-    // dispatch(initSocket());
-    const timer = setInterval(() => {
-      setWaitingTime((prev) => prev + 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
+    // get the room by id
+    getRoom();
   }, []);
 
   // Update preview video element when mediaStream changes
@@ -66,20 +86,13 @@ export default function WaitingLobby() {
       });
       setMediaStream(stream);
 
-      // You can save this stream globally or pass it via context or state management
-      // For now, simulate delay then navigate to video chat page
-      setTimeout(() => {
-        // Stop tracks here if you want, or leave running for next page to handle
-        // stream.getTracks().forEach(track => track.stop());
-
-        setInSessionStorage("user_video_room", {
-          userName,
-          muted,
-          videoOn,
-          user,
-        });
-        navigate(`/videoroom/${roomId}`);
-      }, 2000);
+      setInSessionStorage("user_video_room", {
+        userName,
+        muted,
+        videoOn,
+        user,
+      });
+      navigate(`/videoroom/${room.roomId}`);
     } catch (err) {
       alert(
         "Unable to access camera/microphone. Please check permissions and try again."
@@ -89,7 +102,9 @@ export default function WaitingLobby() {
   };
 
   const copyRoomLink = () => {
-    navigator.clipboard.writeText(`https://localhost:5173/videoroom/${roomId}`);
+    navigator.clipboard.writeText(
+      `http://localhost:5173/waiting-lobby/${room.roomId}`
+    );
     setLinkCopied(true);
     setTimeout(() => setLinkCopied(false), 2000);
   };
@@ -189,12 +204,12 @@ export default function WaitingLobby() {
                   )}
                 </button>
 
-                <button
+                {/* <button
                   className="p-3 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
                   title="Settings"
                 >
                   <Settings className="w-5 h-5" />
-                </button>
+                </button> */}
               </div>
 
               {/* Name Input */}
@@ -224,9 +239,9 @@ export default function WaitingLobby() {
                 <div className="space-y-4">
                   <div>
                     <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                      {roomName}
+                      {room.roomName}
                     </h2>
-                    <p className="text-gray-600">Hosted by {host}</p>
+                    <p className="text-gray-600">Hosted by {room.host}</p>
                   </div>
 
                   <div className="flex items-center justify-between py-3 border-t border-gray-200">
@@ -247,7 +262,7 @@ export default function WaitingLobby() {
                   <div className="flex items-center justify-between py-3 border-t border-gray-200">
                     <div>
                       <p className="text-sm text-gray-600">Room ID</p>
-                      <p className="font-mono text-gray-900">{roomId}</p>
+                      <p className="font-mono text-gray-900">{room.roomId}</p>
                     </div>
                     <button
                       onClick={copyRoomLink}

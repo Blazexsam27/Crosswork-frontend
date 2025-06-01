@@ -20,6 +20,17 @@ class RoomService {
     }
   };
 
+  getAllParticipants = async (roomId: string) => {
+    try {
+      const response = await axios.get(
+        `/api/rooms/${roomId}/get-all-participants`
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
+
   deleteRoomById = async (roomId: string) => {
     try {
       const response = await axios.delete(`/api/rooms/${roomId}`);

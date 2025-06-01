@@ -1,5 +1,6 @@
 export type RoomType = {
   name: string;
+  host: string;
   description: string;
   maxParticipants: number;
   isPrivate: boolean;

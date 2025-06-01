@@ -13,6 +13,7 @@ import "./App.css";
 import VideoRoom from "./views/VideoRoom";
 import VideoRoomWaitingLobby from "./views/VideoRoomWaitingLobby";
 import CreateVideoRoom from "./views/CreateVideoRoom";
+import About from "./views/About";
 
 function App() {
   return (
@@ -26,7 +27,8 @@ function App() {
           <Route path="/oauth-success" element={<OAuthHandler />}></Route>
           <Route path="/oauth-error" element={<SignupForm />}></Route>
           <Route path="/profile" element={<UserProfile />}></Route>
-          <Route path="/forum" element={<Forums />}></Route>
+          <Route path="/about" element={<About />}></Route>
+          <Route path="/forums" element={<Forums />}></Route>
           <Route path="/connect" element={<Connect />}></Route>
           <Route
             path="/create-video-room"

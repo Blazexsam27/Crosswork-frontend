@@ -13,6 +13,7 @@ import {
 
 interface RoomSettings {
   name: string;
+  host: string;
   description: string;
   maxParticipants: number;
   isPrivate: boolean;
@@ -30,6 +31,7 @@ export default function CreateRoom() {
   const [linkCopied, setLinkCopied] = useState(false);
   const [settings, setSettings] = useState<RoomSettings>({
     name: "",
+    host: "",
     description: "",
     maxParticipants: 10,
     isPrivate: false,
@@ -40,21 +42,10 @@ export default function CreateRoom() {
   });
   const user = getFromLocalStorage("user");
 
-  const generateRoomId = () => {
-    const chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-    let result = "";
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        result += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      if (i < 2) result += "-";
-    }
-    return result;
-  };
-
   const handleCreateRoom = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      settings.host = user.name;
       const response = await roomService.createRoom({
         ...settings,
       });
@@ -199,6 +190,7 @@ export default function CreateRoom() {
                   setRoomCreated(false);
                   setSettings({
                     name: "",
+                    host: "",
                     description: "",
                     maxParticipants: 10,
                     isPrivate: false,
