@@ -7,12 +7,15 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { login } from "../../features/auth/authSlice";
 import { useAppDispatch } from "@/hooks/hooks";
 import { getUser } from "@/features/user/userSlice";
-import { getFromLocalStorage } from "@/utils/webstorage.utls";
+import { useSelector } from "react-redux";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { X } from "lucide-react";
 
 export default function LoginForm() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const [isLoading, setIsLoading] = useState(false);
+  const { error, loading } = useSelector((state: any) => state.auth);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -21,6 +24,7 @@ export default function LoginForm() {
     email: "",
     password: "",
   });
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -55,20 +59,17 @@ export default function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setShowErrorAlert(false);
     if (!validateForm()) return;
-
-    setIsLoading(true);
 
     // Simulate API call
     try {
-      await dispatch(login(formData));
-      dispatch(getUser());
-      navigate("/");
-    } catch (error) {
-      console.error("Login failed", error);
-    } finally {
-      setIsLoading(false);
+      await dispatch(login(formData)).unwrap();
+      await dispatch(getUser());
+      window.location.href = "/";
+    } catch (err) {
+      setShowErrorAlert(true);
+      console.error("Login failed", err);
     }
   };
 
@@ -78,7 +79,22 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-2xl shadow-xl mt-4">
+    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-2xl shadow-xl mt-4 ">
+      {showErrorAlert && (
+        <Alert
+          variant="destructive"
+          className="w-max flex gap-8 justify-between border-red-500 bg-red-50 my-2 fixed right-5  top-20 "
+        >
+          <AlertDescription>Incorrect email or password</AlertDescription>
+          <span>
+            <X
+              className="w-4 h-4 cursor-pointer mt-1"
+              onClick={() => setShowErrorAlert(!showErrorAlert)}
+            />
+          </span>
+        </Alert>
+      )}
+
       <div className="text-center mb-8">
         <h2 className="text-3xl font-bold text-gray-900">Welcome back</h2>
         <p className="mt-2 text-gray-600">Log in to your account</p>
@@ -156,10 +172,10 @@ export default function LoginForm() {
 
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={loading}
           className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
         >
-          {isLoading ? (
+          {loading ? (
             <span className="flex items-center justify-center">
               <svg
                 className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
