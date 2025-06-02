@@ -93,7 +93,7 @@ export default function VideoChatRoom() {
     try {
       setParticipants((prev) =>
         prev.map((p) =>
-          p.id === user._id
+          p.userId === user._id
             ? { ...p, isMuted: newMutedState, isVideoOn: newVideoOnState }
             : p
         )
@@ -166,8 +166,9 @@ export default function VideoChatRoom() {
   const getAllParticipants = async () => {
     try {
       const response = await roomService.getAllParticipants(roomId);
-      console.log("partici", response);
-      setParticipants(response.participants);
+      console.log("User------------1");
+
+      return response.participants;
     } catch (error) {
       console.error("Error while getting participants", error);
     }
@@ -177,30 +178,14 @@ export default function VideoChatRoom() {
     dispatch(initSocket());
     if (!socket || !isConnected) return;
 
-    // get all participants of the room
-    getAllParticipants();
-
+    // initialize the local stream first
     const initLocalStream = async () => {
-      const { userName, muted, videoOn, user } =
-        getFromSessionStorage("user_video_room");
+      const { muted, videoOn, user } = getFromSessionStorage("user_video_room");
 
-      console.log("--adding new user", user);
-      // Skip if user already in participants
-      if (participants.find((p) => p.id === user._id)) return;
-
-      setParticipants((prev) => [
-        ...prev,
-        {
-          id: user._id,
-          name: userName,
-          avatar: "/your-avatar.png",
-          isMuted: muted,
-          isVideoOn: videoOn,
-          isHost: true,
-          connectionQuality: "excellent",
-          isPresenting: false,
-        },
-      ]);
+      // get all other participants of the room
+      const totalParticipants = await getAllParticipants();
+      console.log("total-------------------", totalParticipants);
+      setParticipants(totalParticipants);
 
       //  the value of videoOn and muted is coming from waiting lobby selection
       setIsVideoOn(videoOn);
@@ -232,6 +217,7 @@ export default function VideoChatRoom() {
       // Initial join
       socket.emit("join-room", {
         roomId,
+        userId: user._id,
         name: user.name,
         email: user.email,
         isVideoOn,
@@ -417,7 +403,7 @@ export default function VideoChatRoom() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 h-full">
               {participants.map((participant) => (
                 <ParticipantVideo
-                  key={participant.id}
+                  key={participant.userId}
                   participant={participant}
                   videoRef={localVideoRef}
                 />

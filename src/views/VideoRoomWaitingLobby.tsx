@@ -22,8 +22,8 @@ import roomService from "@/services/room.service";
 
 export default function WaitingLobby() {
   const navigate = useNavigate();
-  const [muted, setMuted] = useState(false);
-  const [videoOn, setVideoOn] = useState(true);
+  const [muted, setMuted] = useState(true);
+  const [videoOn, setVideoOn] = useState(false);
   const [userName, setUserName] = useState("John Doe");
   const [isJoining, setIsJoining] = useState(false);
   const [waitingTime, setWaitingTime] = useState(0);
@@ -46,7 +46,6 @@ export default function WaitingLobby() {
 
   const getRoom = async () => {
     const room = await roomService.getRoomById(roomIdFromUrl);
-    console.log("rrr", room);
     setRoom({
       roomId: room._id,
       roomName: room.name,
@@ -80,11 +79,13 @@ export default function WaitingLobby() {
   const handleJoinRoom = async () => {
     setIsJoining(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        audio: !muted,
-        video: videoOn,
-      });
-      setMediaStream(stream);
+      if (!muted || videoOn) {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: muted,
+          video: videoOn,
+        });
+        setMediaStream(stream);
+      }
 
       setInSessionStorage("user_video_room", {
         userName,
@@ -97,6 +98,7 @@ export default function WaitingLobby() {
       alert(
         "Unable to access camera/microphone. Please check permissions and try again."
       );
+      console.error("error", err);
       setIsJoining(false);
     }
   };

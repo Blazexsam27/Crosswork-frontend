@@ -5,6 +5,7 @@ import {
   Video,
   MessageCircle,
   BookOpen,
+  Smile,
 } from "lucide-react";
 import Footer from "@/components/Footer/Footer";
 
@@ -54,9 +55,9 @@ export default function AboutPage() {
             <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl p-8">
               <div className="aspect-video relative bg-white rounded-xl overflow-hidden shadow-lg">
                 <img
-                  src="/placeholder.svg?height=400&width=600"
+                  src="/assets/about_1.jpg"
                   alt="Students collaborating"
-                  className="w-[600px] h-[400px] object-cover"
+                  className="w-[600px] h-[400px] object-contain"
                 />
               </div>
             </div>
@@ -206,11 +207,7 @@ export default function AboutPage() {
             <div className="bg-white rounded-xl shadow-md p-6">
               <div className="flex items-center mb-4">
                 <div className="mr-4">
-                  <img
-                    src="/placeholder.svg?height=60&width=60"
-                    alt="Student"
-                    className="w-16 h-16 rounded-full"
-                  />
+                  <Smile className="w-16 h-16 text-purple-500" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-gray-900">
@@ -230,11 +227,7 @@ export default function AboutPage() {
             <div className="bg-white rounded-xl shadow-md p-6">
               <div className="flex items-center mb-4">
                 <div className="mr-4">
-                  <img
-                    src="/placeholder.svg?height=60&width=60"
-                    alt="Student"
-                    className="w-16 h-16 rounded-full"
-                  />
+                  <Smile className="w-16 h-16 text-purple-500" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-gray-900">
@@ -254,11 +247,7 @@ export default function AboutPage() {
             <div className="bg-white rounded-xl shadow-md p-6">
               <div className="flex items-center mb-4">
                 <div className="mr-4">
-                  <img
-                    src="/placeholder.svg?height=60&width=60"
-                    alt="Student"
-                    className="w-16 h-16 rounded-full"
-                  />
+                  <Smile className="w-16 h-16 text-purple-500" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-gray-900">

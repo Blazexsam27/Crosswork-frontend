@@ -1,5 +1,5 @@
 export interface Participant {
-  id: string;
+  userId: string;
   name: string;
   avatar: string;
   isMuted: boolean;

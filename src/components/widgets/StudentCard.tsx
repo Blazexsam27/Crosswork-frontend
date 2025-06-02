@@ -1,6 +1,6 @@
 import type { StudentCardProps } from "@/types/user/userTypes";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
-import { Check, MessageCircle, UserPlus, X } from "lucide-react";
+import { Check, MessageCircle, Smile, UserPlus, X } from "lucide-react";
 
 export default function StudentCard({
   student,
@@ -50,11 +50,7 @@ export default function StudentCard({
     <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-200 p-6">
       <div className="flex items-start space-x-4">
         <div className="relative">
-          <img
-            src={student.profilePic || "/placeholder.svg?height=80&width=80"}
-            alt={student.name}
-            className="w-16 h-16 rounded-full object-cover"
-          />
+          <Smile className="w-16 h-16 rounded-full object-cover" />
         </div>
 
         <div className="flex-1 min-w-0">

@@ -5,9 +5,10 @@ import {
   Users,
   Video,
   MessageCircle,
-  Check,
   ChevronRight,
   Star,
+  Smile,
+  UsersRound,
 } from "lucide-react";
 function Home() {
   return (
@@ -217,11 +218,7 @@ function Home() {
               </div>
               <div className="flex items-center mb-6 pt-4">
                 <div className="mr-4">
-                  <img
-                    src="/placeholder.svg?height=60&width=60"
-                    alt="Student"
-                    className="w-16 h-16 rounded-full"
-                  />
+                  <Smile className="w-16 h-16 text-purple-500" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-gray-900">
@@ -266,11 +263,7 @@ function Home() {
               </div>
               <div className="flex items-center mb-6 pt-4">
                 <div className="mr-4">
-                  <img
-                    src="/placeholder.svg?height=60&width=60"
-                    alt="Student"
-                    className="w-16 h-16 rounded-full"
-                  />
+                  <Smile className="w-16 h-16 text-purple-500" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-gray-900">
@@ -315,11 +308,7 @@ function Home() {
               </div>
               <div className="flex items-center mb-6 pt-4">
                 <div className="mr-4">
-                  <img
-                    src="/placeholder.svg?height=60&width=60"
-                    alt="Student"
-                    className="w-16 h-16 rounded-full"
-                  />
+                  <Smile className="w-16 h-16 text-purple-500" />
                 </div>
                 <div>
                   <h4 className="text-lg font-semibold text-gray-900">
@@ -490,21 +479,7 @@ function Home() {
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="flex -space-x-2">
-                    <img
-                      src="/placeholder.svg?height=32&width=32"
-                      alt="Participant"
-                      className="  rounded-full border-2 border-white"
-                    />
-                    <img
-                      src="/placeholder.svg?height=32&width=32"
-                      alt="Participant"
-                      className="w-9 h-9 rounded-full border-2 border-white"
-                    />
-                    <img
-                      src="/placeholder.svg?height=32&width=32"
-                      alt="Participant"
-                      className="w-9 h-9 rounded-full border-2 border-white"
-                    />
+                    <UsersRound className="w-9 h-9 rounded-full border-2 border-white" />
                     <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs text-gray-600">
                       +2
                     </div>
@@ -538,16 +513,7 @@ function Home() {
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="flex -space-x-2">
-                    <img
-                      src="/placeholder.svg?height=32&width=32"
-                      alt="Participant"
-                      className="w-9 h- 9 rounded-full border-2 border-white"
-                    />
-                    <img
-                      src="/placeholder.svg?height=32&width=32"
-                      alt="Participant"
-                      className="w-9 h- 9  rounded-full border-2 border-white"
-                    />
+                    <UsersRound className="w-9 h-9 rounded-full border-2 border-white" />
                     <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs text-gray-600">
                       +1
                     </div>
@@ -581,11 +547,7 @@ function Home() {
                 </p>
                 <div className="flex items-center justify-between">
                   <div className="flex -space-x-2">
-                    <img
-                      src="/placeholder.svg?height=32&width=32"
-                      alt="Participant"
-                      className="w-9 h-9 rounded-full border-2 border-white"
-                    />
+                    <UsersRound className="w-9 h-9 rounded-full border-2 border-white" />
                     <div className="w-8 h-8 rounded-full bg-gray-200 border-2 border-white flex items-center justify-center text-xs text-gray-600">
                       +0
                     </div>
