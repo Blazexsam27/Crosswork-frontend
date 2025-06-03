@@ -11,6 +11,7 @@ import {
   Save,
   X,
   Users,
+  Smile,
 } from "lucide-react";
 import type { Room, UserProfile } from "@/types/profile/profileTypes";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
@@ -21,7 +22,6 @@ import notificationService from "@/services/notification.service";
 import { Button } from "@/components/ui/button";
 import connectService from "@/services/connect.service";
 import { toast, ToastContainer } from "react-toastify";
-import type { UserType } from "@/types/user/userTypes";
 const mockRooms: Room[] = [
   {
     id: "1",
@@ -127,15 +127,6 @@ export default function ProfileView() {
     setIsEditing(false);
   };
 
-  // const handleAcceptConnection = async () => {
-  //   try {
-  //     await connectService.acceptRequest(editedProfile._id, userData._id);
-  //     getPendingInvitesOfUser();
-  //   } catch (error) {
-  //     console.error("Error while accepting connection:", error);
-  //   }
-  // }
-
   const handleCancel = () => {
     setEditedProfile(profile);
     setIsEditing(false);
@@ -226,16 +217,7 @@ export default function ProfileView() {
         {/* Profile Picture */}
         <div className="flex items-center space-x-4">
           <div className="relative">
-            <img
-              src={isEditing ? editedProfile.profilePic : profile.profilePic}
-              alt="Profile"
-              className="w-24 h-24 rounded-full object-cover border-4 border-gray-200"
-            />
-            {isEditing && (
-              <button className="absolute bottom-0 right-0 p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors">
-                <Camera className="w-4 h-4" />
-              </button>
-            )}
+            <Smile className="w-18 h-18 text-purple-600" />
           </div>
           <div>
             <h3 className="text-lg font-semibold text-gray-900">

@@ -10,6 +10,11 @@ import { getUser } from "@/features/user/userSlice";
 import { useSelector } from "react-redux";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { X } from "lucide-react";
+import recommendService from "@/services/recommend.service";
+import {
+  getFromLocalStorage,
+  setInLocalStorage,
+} from "@/utils/webstorage.utls";
 
 export default function LoginForm() {
   const navigate = useNavigate();
@@ -66,6 +71,11 @@ export default function LoginForm() {
     try {
       await dispatch(login(formData)).unwrap();
       await dispatch(getUser());
+      // call the recommendations
+      const response = await recommendService.getRecommendations(
+        getFromLocalStorage("user")
+      );
+      setInLocalStorage("recommendations", response);
       window.location.href = "/";
     } catch (err) {
       setShowErrorAlert(true);

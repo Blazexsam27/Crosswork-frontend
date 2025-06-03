@@ -171,6 +171,7 @@ export default function ConnectionsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
+  const [suggestedStudents, setSuggestedStudents] = useState<Student[]>([]);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [connectionStates, setConnectionStates] = useState<
@@ -235,14 +236,24 @@ export default function ConnectionsPage() {
     return matchesSearch && matchesInterests;
   });
 
-  const suggestedStudents = students
-    .filter((student) => (connectionStates[student._id] || "none") === "none")
-    .slice(0, 3);
-
   const getAllUsers = async () => {
     try {
       const response = await userService.getAllUsers();
       setStudents(response);
+      // recommended connections
+
+      const recommendations =
+        getFromLocalStorage("recommendations")?.recommendations;
+
+      const top3 = recommendations
+        .slice(0, 3)
+        .map((student: any) => student.id);
+      let temp: Student[] = [];
+      response.map((student: Student) => {
+        if (top3.includes(student._id)) temp.push(student);
+      });
+      console.log("---", temp);
+      setSuggestedStudents(temp);
 
       // update the connection statuses
       let connections: Record<string, "connected" | "pending" | "none"> = {};
@@ -421,7 +432,7 @@ export default function ConnectionsPage() {
               Suggested for You
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {suggestedStudents.map((student) => (
+              {suggestedStudents.map((student: Student) => (
                 <StudentCard
                   key={student._id}
                   student={student}
