@@ -1,177 +1,96 @@
 "use client";
 
-import type React from "react";
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Plus, MessageCircle, ArrowUp, ArrowDown } from "lucide-react";
-
-interface Discussion {
-  id: string;
-  title: string;
-  content: string;
-  author: {
-    name: string;
-    avatar: string;
-    reputation: number;
-  };
-  subject: string;
-  votes: number;
-  userVote: "up" | "down" | null;
-  commentsCount: number;
-  createdAt: string;
-  isHot: boolean;
-}
-
-interface Comment {
-  id: string;
-  content: string;
-  author: {
-    name: string;
-    avatar: string;
-  };
-  votes: number;
-  userVote: "up" | "down" | null;
-  createdAt: string;
-  replies: Comment[];
-}
-
-const mockDiscussions: Discussion[] = [
-  {
-    id: "1",
-    title: "Best strategies for learning React Hooks effectively?",
-    content:
-      "I've been struggling with understanding useEffect and useCallback. What are some practical exercises or projects that helped you master these concepts?",
-    author: {
-      name: "Sarah Chen",
-      avatar: "/placeholder.svg?height=40&width=40",
-      reputation: 1250,
-    },
-    subject: "Computer Science",
-    votes: 24,
-    userVote: null,
-    commentsCount: 12,
-    createdAt: "2024-01-20T10:30:00Z",
-    isHot: true,
-  },
-  {
-    id: "2",
-    title: "Calculus study group forming - Advanced topics",
-    content:
-      "Looking to form a study group for Calculus III. We'll be covering multivariable calculus, partial derivatives, and vector calculus. Meeting twice a week.",
-    author: {
-      name: "Mike Johnson",
-      avatar: "/placeholder.svg?height=40&width=40",
-      reputation: 890,
-    },
-    subject: "Mathematics",
-    votes: 18,
-    userVote: "up",
-    commentsCount: 8,
-    createdAt: "2024-01-19T15:45:00Z",
-    isHot: false,
-  },
-  {
-    id: "3",
-    title: "Physics lab report help - Quantum mechanics experiment",
-    content:
-      "Need help interpreting results from our quantum tunneling experiment. The data doesn't match theoretical predictions and I'm not sure where I went wrong.",
-    author: {
-      name: "Alex Rivera",
-      avatar: "/placeholder.svg?height=40&width=40",
-      reputation: 567,
-    },
-    subject: "Physics",
-    votes: 15,
-    userVote: null,
-    commentsCount: 6,
-    createdAt: "2024-01-19T09:20:00Z",
-    isHot: false,
-  },
-  {
-    id: "4",
-    title: "Machine Learning resources for beginners",
-    content:
-      "Compiled a list of the best free resources for getting started with ML. Includes courses, books, and hands-on projects. What would you add to this list?",
-    author: {
-      name: "Emma Davis",
-      avatar: "/placeholder.svg?height=40&width=40",
-      reputation: 2100,
-    },
-    subject: "Computer Science",
-    votes: 42,
-    userVote: "up",
-    commentsCount: 23,
-    createdAt: "2024-01-18T14:10:00Z",
-    isHot: true,
-  },
-];
-
-const subjects = [
-  { name: "Computer Science", count: 156, color: "bg-blue-100 text-blue-800" },
-  { name: "Mathematics", count: 89, color: "bg-purple-100 text-purple-800" },
-  { name: "Physics", count: 67, color: "bg-green-100 text-green-800" },
-  { name: "Chemistry", count: 45, color: "bg-yellow-100 text-yellow-800" },
-  { name: "Biology", count: 34, color: "bg-pink-100 text-pink-800" },
-  { name: "Engineering", count: 78, color: "bg-indigo-100 text-indigo-800" },
-];
+import type {
+  ThreadCreateType,
+  ThreadRetrieveType,
+  VoteType,
+} from "@/types/forums/forumTypes";
+import { subjects } from "@/components/Forums/static";
+import DiscussionModal from "@/components/Forums/DiscussionModal";
+import threadService from "@/services/thread.service";
+import { getFromLocalStorage } from "@/utils/webstorage.utls";
 
 export default function ForumPage() {
-  const [discussions, setDiscussions] = useState<Discussion[]>(mockDiscussions);
+  const [threads, setThreads] = useState<ThreadRetrieveType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"hot" | "new" | "top">("hot");
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
 
-  const handleVote = (discussionId: string, voteType: "up" | "down") => {
-    setDiscussions((prev) =>
-      prev.map((discussion) => {
-        if (discussion.id === discussionId) {
-          let newVotes = discussion.votes;
-          let newUserVote: "up" | "down" | null = voteType;
+  const user = getFromLocalStorage("user");
 
-          // Handle vote logic
-          if (discussion.userVote === voteType) {
-            // Remove vote if clicking same vote
-            newUserVote = null;
-            newVotes += voteType === "up" ? -1 : 1;
-          } else if (discussion.userVote === null) {
-            // Add new vote
-            newVotes += voteType === "up" ? 1 : -1;
-          } else {
-            // Change vote
-            newVotes += voteType === "up" ? 2 : -2;
-          }
+  const handleVote = async (threadId: string, voteType: "up" | "down") => {
+    try {
+      const thread = threads.find((t) => t._id === threadId);
+      if (!thread) return;
 
-          return {
-            ...discussion,
-            votes: newVotes,
-            userVote: newUserVote,
-          };
+      const userId = user._id;
+      const existingVoteIndex = thread.votes.findIndex(
+        (v) => v.userId === userId
+      );
+
+      // Case 1: Clicking same vote type again - remove vote
+      if (
+        existingVoteIndex >= 0 &&
+        thread.votes[existingVoteIndex].voteType === voteType
+      ) {
+        thread.votes = thread.votes.filter((v) => v.userId !== userId);
+      }
+      // Case 2: Changing vote type or new vote
+      else {
+        const newVote = { userId, voteType };
+
+        if (existingVoteIndex >= 0) {
+          // Update existing vote
+          thread.votes[existingVoteIndex] = newVote;
+        } else {
+          // Add new vote
+          thread.votes.push(newVote);
         }
-        return discussion;
-      })
-    );
+      }
+
+      await threadService.updateThread(threadId, { votes: thread.votes });
+
+      await getAllThreads();
+    } catch (error) {
+      console.error("Error while voting:", error);
+    }
   };
 
-  const filteredDiscussions = discussions
-    .filter((discussion) => {
+  const checkVote = (threadId: string, voteType: "up" | "down") => {
+    try {
+      const thread = threads.find((t) => t._id === threadId);
+      if (!thread) return;
+
+      const userId = user._id;
+      const vote = thread.votes.find((v) => v.userId === userId);
+
+      return vote?.voteType === voteType ? true : false;
+    } catch (error) {
+      console.error("Error while checking vote:", error);
+      return null;
+    }
+  };
+
+  const filteredThreads = threads
+    .filter((thread) => {
       const matchesSearch =
-        discussion.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        discussion.content.toLowerCase().includes(searchTerm.toLowerCase());
+        thread.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        thread.content.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesSubject =
-        !selectedSubject || discussion.subject === selectedSubject;
+        !selectedSubject || thread.category === selectedSubject;
       return matchesSearch && matchesSubject;
     })
     .sort((a, b) => {
       switch (sortBy) {
-        case "hot":
-          return (b.isHot ? 1 : 0) - (a.isHot ? 1 : 0) || b.votes - a.votes;
         case "new":
           return (
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           );
         case "top":
-          return b.votes - a.votes;
+          return b.votes.length - a.votes.length;
         default:
           return 0;
       }
@@ -189,6 +108,40 @@ export default function ForumPage() {
     const diffInDays = Math.floor(diffInHours / 24);
     return `${diffInDays}d ago`;
   };
+
+  async function handleThreadSubmit(
+    newDiscussion: ThreadCreateType
+  ): Promise<void> {
+    try {
+      await threadService.createThread(newDiscussion);
+    } catch (error) {
+      console.error("Error while creating thread", error);
+    }
+  }
+
+  async function getAllThreads() {
+    try {
+      const response = await threadService.getAllThreads();
+      setThreads(response);
+    } catch (error) {
+      console.error("Error while getting threads", error);
+    }
+  }
+
+  useEffect(() => {
+    getAllThreads();
+  }, []);
+
+  function calcTotalVotes(votes: VoteType[]): number {
+    return votes.reduce((total, vote) => {
+      if (vote.voteType === "up") {
+        return total + 1;
+      } else if (vote.voteType === "down") {
+        return total - 1;
+      }
+      return total;
+    }, 0);
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
@@ -231,7 +184,7 @@ export default function ForumPage() {
                 }
                 className="px-2 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
-                <option value="hot">🔥 Hot</option>
+                <option value="hot">🔥 Trending</option>
                 <option value="new">🕒 New</option>
                 <option value="top">⭐ Top</option>
               </select>
@@ -300,9 +253,9 @@ export default function ForumPage() {
           {/* Main Content */}
           <div className="lg:col-span-3">
             <div className="space-y-4">
-              {filteredDiscussions.map((discussion) => (
+              {filteredThreads.map((thread: ThreadRetrieveType) => (
                 <div
-                  key={discussion.id}
+                  key={thread._id}
                   className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-200"
                 >
                   <div className="p-6">
@@ -310,9 +263,9 @@ export default function ForumPage() {
                       {/* Vote Section */}
                       <div className="flex flex-col items-center space-y-1 min-w-[60px]">
                         <button
-                          onClick={() => handleVote(discussion.id, "up")}
-                          className={`p-2 rounded-lg transition-colors ${
-                            discussion.userVote === "up"
+                          onClick={() => handleVote(thread._id, "up")}
+                          className={`p-2 rounded-lg transition-colors cursor-pointer  ${
+                            checkVote(thread._id, "up")
                               ? "bg-green-100 text-green-600"
                               : "hover:bg-gray-100 text-gray-600"
                           }`}
@@ -321,19 +274,19 @@ export default function ForumPage() {
                         </button>
                         <span
                           className={`font-semibold ${
-                            discussion.votes > 0
+                            thread.votes.length > 0
                               ? "text-green-600"
-                              : discussion.votes < 0
+                              : thread.votes.length < 0
                               ? "text-red-600"
                               : "text-gray-600"
                           }`}
                         >
-                          {discussion.votes}
+                          {calcTotalVotes(thread.votes)}
                         </span>
                         <button
-                          onClick={() => handleVote(discussion.id, "down")}
-                          className={`p-2 rounded-lg transition-colors ${
-                            discussion.userVote === "down"
+                          onClick={() => handleVote(thread._id, "down")}
+                          className={`p-2 rounded-lg transition-colors cursor-pointer ${
+                            checkVote(thread._id, "down")
                               ? "bg-red-100 text-red-600"
                               : "hover:bg-gray-100 text-gray-600"
                           }`}
@@ -345,50 +298,44 @@ export default function ForumPage() {
                       {/* Content Section */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center space-x-2 mb-2">
-                          {discussion.isHot && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                              🔥 Hot
-                            </span>
-                          )}
                           <span
                             className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                              subjects.find(
-                                (s) => s.name === discussion.subject
-                              )?.color || "bg-gray-100 text-gray-800"
+                              subjects.find((s) => s.name === thread.category)
+                                ?.color || "bg-gray-100 text-gray-800"
                             }`}
                           >
-                            {discussion.subject}
+                            {thread.category}
                           </span>
                         </div>
 
                         <h3 className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 cursor-pointer">
-                          {discussion.title}
+                          {thread.title}
                         </h3>
 
                         <p className="text-gray-600 mb-4 line-clamp-2">
-                          {discussion.content}
+                          {thread.content}
                         </p>
 
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-4">
                             <div className="flex items-center space-x-2">
-                              <img
+                              {/* <img
                                 src={
-                                  discussion.author.avatar || "/placeholder.svg"
+                                  thread.author.avatar || "/placeholder.svg"
                                 }
-                                alt={discussion.author.name}
+                                alt={thread.author.name}
                                 className="w-6 h-6 rounded-full"
-                              />
+                              /> */}
                               <span className="text-sm text-gray-600">
-                                {discussion.author.name}
+                                {thread.author.name}
                               </span>
                               <span className="text-xs text-gray-400">•</span>
                               <span className="text-xs text-gray-400">
-                                {discussion.author.reputation} rep
+                                {/* {thread.author.reputation} rep */}
                               </span>
                             </div>
                             <span className="text-sm text-gray-500">
-                              {formatTimeAgo(discussion.createdAt)}
+                              {formatTimeAgo(thread.createdAt)}
                             </span>
                           </div>
 
@@ -396,7 +343,7 @@ export default function ForumPage() {
                             <button className="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                               <MessageCircle className="w-4 h-4" />
                               <span className="text-sm">
-                                {discussion.commentsCount}
+                                {/* {thread.commentsCount} */}
                               </span>
                             </button>
                           </div>
@@ -408,7 +355,7 @@ export default function ForumPage() {
               ))}
             </div>
 
-            {filteredDiscussions.length === 0 && (
+            {filteredThreads.length === 0 && (
               <div className="text-center py-12">
                 <div className="text-gray-400 mb-4">
                   <MessageCircle className="w-16 h-16 mx-auto" />
@@ -428,129 +375,11 @@ export default function ForumPage() {
 
       {/* Create Discussion Modal */}
       {showCreateModal && (
-        <CreateDiscussionModal
+        <DiscussionModal
           onClose={() => setShowCreateModal(false)}
-          onSubmit={(newDiscussion) => {
-            setDiscussions((prev) => [newDiscussion, ...prev]);
-            setShowCreateModal(false);
-          }}
+          onSubmit={(newDiscussion) => handleThreadSubmit(newDiscussion)}
         />
       )}
-    </div>
-  );
-}
-
-interface CreateDiscussionModalProps {
-  onClose: () => void;
-  onSubmit: (discussion: Discussion) => void;
-}
-
-function CreateDiscussionModal({
-  onClose,
-  onSubmit,
-}: CreateDiscussionModalProps) {
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [subject, setSubject] = useState("");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !content.trim() || !subject) return;
-
-    const newDiscussion: Discussion = {
-      id: Date.now().toString(),
-      title: title.trim(),
-      content: content.trim(),
-      author: {
-        name: "You",
-        avatar: "/placeholder.svg?height=40&width=40",
-        reputation: 100,
-      },
-      subject,
-      votes: 1,
-      userVote: "up",
-      commentsCount: 0,
-      createdAt: new Date().toISOString(),
-      isHot: false,
-    };
-
-    onSubmit(newDiscussion);
-  };
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            Start New Discussion
-          </h2>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Subject
-              </label>
-              <select
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              >
-                <option value="">Select a subject</option>
-                {subjects.map((subj) => (
-                  <option key={subj.name} value={subj.name}>
-                    {subj.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Title
-              </label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="What's your question or topic?"
-                required
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Content
-              </label>
-              <textarea
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                rows={6}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                placeholder="Provide more details about your discussion..."
-                required
-              />
-            </div>
-
-            <div className="flex justify-end space-x-4 pt-4">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
-              >
-                Post Discussion
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
     </div>
   );
 }

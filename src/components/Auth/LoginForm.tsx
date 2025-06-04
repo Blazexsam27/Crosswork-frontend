@@ -72,7 +72,7 @@ export default function LoginForm() {
       await dispatch(login(formData)).unwrap();
       await dispatch(getUser());
       // call the recommendations
-      const response = await recommendService.getRecommendations(
+      const response = recommendService.getRecommendations(
         getFromLocalStorage("user")
       );
       setInLocalStorage("recommendations", response);
