@@ -15,19 +15,6 @@ export interface Discussion {
   isHot: boolean;
 }
 
-export interface Comment {
-  id: string;
-  content: string;
-  author: {
-    name: string;
-    avatar: string;
-  };
-  votes: number;
-  userVote: "up" | "down" | null;
-  createdAt: string;
-  replies: Comment[];
-}
-
 export interface CreateDiscussionModalProps {
   onClose: () => void;
   onSubmit: (threadData: ThreadCreateType) => void;
@@ -46,6 +33,7 @@ export type ThreadRetrieveType = {
   title: string;
   category: string;
   content: string;
+  comments: [];
   author: {
     _id: string;
     name: string;
@@ -56,3 +44,35 @@ export type ThreadRetrieveType = {
   votes: VoteType[];
   likes: string[];
 };
+
+export interface Discussion {
+  id: string;
+  title: string;
+  content: string;
+  author: {
+    name: string;
+    avatar: string;
+    reputation: number;
+  };
+  subject: string;
+  votes: number;
+  userVote: "up" | "down" | null;
+  commentsCount: number;
+  createdAt: string;
+  isHot: boolean;
+}
+
+export interface Comment {
+  _id: string;
+  content: string;
+  author: {
+    name: string;
+    avatar: string;
+  };
+  votes: VoteType[];
+  userVote: "up" | "down" | null;
+  createdAt: string;
+  replies: Comment[];
+  likes: number;
+  userLiked: boolean;
+}

@@ -14,6 +14,7 @@ import VideoRoom from "./views/VideoRoom";
 import VideoRoomWaitingLobby from "./views/VideoRoomWaitingLobby";
 import CreateVideoRoom from "./views/CreateVideoRoom";
 import About from "./views/About";
+import DiscussionPage from "./views/DiscussionPage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/profile" element={<UserProfile />}></Route>
           <Route path="/about" element={<About />}></Route>
           <Route path="/forums" element={<Forums />}></Route>
+          <Route path="/forums/:id" element={<DiscussionPage />}></Route>
           <Route path="/connect" element={<Connect />}></Route>
           <Route
             path="/create-video-room"

@@ -5,14 +5,19 @@ import { Search, Plus, MessageCircle, ArrowUp, ArrowDown } from "lucide-react";
 import type {
   ThreadCreateType,
   ThreadRetrieveType,
-  VoteType,
 } from "@/types/forums/forumTypes";
 import { subjects } from "@/components/Forums/static";
 import DiscussionModal from "@/components/Forums/DiscussionModal";
 import threadService from "@/services/thread.service";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
+import { useNavigate } from "react-router-dom";
+import { checkVote, calcTotalVotes } from "@/components/Forums/util";
+import { useAppDispatch } from "@/hooks/hooks";
+import { cacheThread } from "@/features/forum/forumSlice";
 
 export default function ForumPage() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [threads, setThreads] = useState<ThreadRetrieveType[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"hot" | "new" | "top">("hot");
@@ -56,21 +61,6 @@ export default function ForumPage() {
       await getAllThreads();
     } catch (error) {
       console.error("Error while voting:", error);
-    }
-  };
-
-  const checkVote = (threadId: string, voteType: "up" | "down") => {
-    try {
-      const thread = threads.find((t) => t._id === threadId);
-      if (!thread) return;
-
-      const userId = user._id;
-      const vote = thread.votes.find((v) => v.userId === userId);
-
-      return vote?.voteType === voteType ? true : false;
-    } catch (error) {
-      console.error("Error while checking vote:", error);
-      return null;
     }
   };
 
@@ -132,15 +122,10 @@ export default function ForumPage() {
     getAllThreads();
   }, []);
 
-  function calcTotalVotes(votes: VoteType[]): number {
-    return votes.reduce((total, vote) => {
-      if (vote.voteType === "up") {
-        return total + 1;
-      } else if (vote.voteType === "down") {
-        return total - 1;
-      }
-      return total;
-    }, 0);
+  function handleThreadClick(thread: ThreadRetrieveType): void {
+    dispatch(cacheThread(thread));
+
+    navigate("/forums/" + thread._id);
   }
 
   return (
@@ -257,6 +242,7 @@ export default function ForumPage() {
                 <div
                   key={thread._id}
                   className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-200"
+                  onClick={() => handleThreadClick(thread)}
                 >
                   <div className="p-6">
                     <div className="flex items-start space-x-4">
@@ -265,7 +251,7 @@ export default function ForumPage() {
                         <button
                           onClick={() => handleVote(thread._id, "up")}
                           className={`p-2 rounded-lg transition-colors cursor-pointer  ${
-                            checkVote(thread._id, "up")
+                            checkVote(threads, thread._id, "up", user._id)
                               ? "bg-green-100 text-green-600"
                               : "hover:bg-gray-100 text-gray-600"
                           }`}
@@ -286,7 +272,7 @@ export default function ForumPage() {
                         <button
                           onClick={() => handleVote(thread._id, "down")}
                           className={`p-2 rounded-lg transition-colors cursor-pointer ${
-                            checkVote(thread._id, "down")
+                            checkVote(threads, thread._id, "down", user._id)
                               ? "bg-red-100 text-red-600"
                               : "hover:bg-gray-100 text-gray-600"
                           }`}
@@ -343,10 +329,15 @@ export default function ForumPage() {
                             <button className="flex items-center space-x-1 text-gray-500 hover:text-blue-600 transition-colors">
                               <MessageCircle className="w-4 h-4" />
                               <span className="text-sm">
-                                {/* {thread.commentsCount} */}
+                                {thread.comments.length > 0
+                                  ? thread.comments.length
+                                  : null}
                               </span>
                             </button>
                           </div>
+
+                          {/* Comment panel */}
+                          <div></div>
                         </div>
                       </div>
                     </div>

@@ -8,7 +8,7 @@ import { login } from "../../features/auth/authSlice";
 import { useAppDispatch } from "@/hooks/hooks";
 import { getUser } from "@/features/user/userSlice";
 import { useSelector } from "react-redux";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { X } from "lucide-react";
 import recommendService from "@/services/recommend.service";
 import {
