@@ -18,6 +18,8 @@ import { getFromLocalStorage } from "@/utils/webstorage.utls";
 import commentService from "@/services/comment.service";
 import { formatTimeAgo } from "../utils/time.utils";
 import CommentComponent from "@/components/DiscussionPage/CommentComponent";
+import forumUtils from "@/utils/forum.utils";
+import _ from "lodash";
 
 export default function DiscussionPage() {
   const threadId = window.location.pathname.split("/")[2];
@@ -32,7 +34,17 @@ export default function DiscussionPage() {
 
   const user = getFromLocalStorage("user");
 
-  const handleVoteDiscussion = (voteType: "up" | "down") => {};
+  const handleVoteDiscussion = async (voteType: "up" | "down") => {
+    try {
+      const temp = _.cloneDeep(thread);
+      const updatedVotes = forumUtils.handleThreadVote(temp, voteType);
+      threadService.updateThread(threadId, { votes: updatedVotes });
+
+      await fetchThreadById(threadId);
+    } catch (error) {
+      console.error("Error while voting:", error);
+    }
+  };
 
   const handleVoteComment = async (
     commentId: string,
@@ -74,37 +86,34 @@ export default function DiscussionPage() {
     }
   };
 
-  const handleLikeComment = (
-    commentId: string,
-    isReply = false,
-    parentId?: string
-  ) => {
-    setComments((prev) =>
-      prev.map((comment) => {
-        if (isReply && comment._id === parentId) {
-          return {
-            ...comment,
-            replies: comment.replies.map((reply) => {
-              if (reply._id === commentId) {
-                return {
-                  ...reply,
-                  likes: reply.userLiked ? reply.likes - 1 : reply.likes + 1,
-                  userLiked: !reply.userLiked,
-                };
-              }
-              return reply;
-            }),
-          };
-        } else if (comment._id === commentId) {
-          return {
-            ...comment,
-            likes: comment.userLiked ? comment.likes - 1 : comment.likes + 1,
-            userLiked: !comment.userLiked,
-          };
-        }
-        return comment;
-      })
-    );
+  const handleLikeComment = async (commentId: string) => {
+    try {
+      const comment = await commentService.getCommentById(commentId);
+      const currentLikes = await forumUtils.handleCommentLike(
+        comment,
+        user._id
+      );
+
+      const response = await commentService.updateComment(commentId, {
+        likes: currentLikes,
+      });
+
+      await fetchThreadById(threadId);
+    } catch (error) {
+      console.error("Error while liking comment:", error);
+    }
+  };
+
+  const handleThreadLike = async () => {
+    try {
+      const temp = _.cloneDeep(thread);
+      const currentLikes = forumUtils.handleThreadLike(temp, user._id);
+      await threadService.updateThread(threadId, { likes: currentLikes });
+
+      await fetchThreadById(threadId);
+    } catch (error) {
+      console.error("Error while liking:", error);
+    }
   };
 
   const handleAddComment = async (e: React.FormEvent) => {
@@ -153,10 +162,7 @@ export default function DiscussionPage() {
   };
 
   useEffect(() => {
-    if (!thread) {
-      fetchThreadById(threadId);
-    }
-    console.log("Thread--", thread);
+    fetchThreadById(threadId);
     dispatch(setCurrentThread(threadId));
   }, [threadId]);
 
@@ -170,7 +176,7 @@ export default function DiscussionPage() {
         {/* Back Button */}
         <div className="mb-6">
           <NavLink
-            to="/forum"
+            to="/forums"
             className="inline-flex items-center text-gray-600 hover:text-gray-900 transition-colors"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -244,8 +250,17 @@ export default function DiscussionPage() {
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <button className="p-2 text-gray-400 hover:text-red-600 transition-colors">
-                    <Heart className="w-5 h-5" />
+                  <button
+                    className="p-2 text-gray-400 hover:text-red-600 transition-colors"
+                    onClick={handleThreadLike}
+                  >
+                    <Heart
+                      className={`w-5 h-5 ${
+                        thread.likes.includes(user._id)
+                          ? "fill-red-500 text-red-500"
+                          : ""
+                      }`}
+                    />
                   </button>
                   <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
                     <Share className="w-5 h-5" />

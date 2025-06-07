@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { checkVote, calcTotalVotes } from "@/components/Forums/util";
 import { useAppDispatch } from "@/hooks/hooks";
 import { cacheThread } from "@/features/forum/forumSlice";
+import forumUtils from "@/utils/forum.utils";
 
 export default function ForumPage() {
   const dispatch = useAppDispatch();
@@ -30,33 +31,8 @@ export default function ForumPage() {
     try {
       const thread = threads.find((t) => t._id === threadId);
       if (!thread) return;
-
-      const userId = user._id;
-      const existingVoteIndex = thread.votes.findIndex(
-        (v) => v.userId === userId
-      );
-
-      // Case 1: Clicking same vote type again - remove vote
-      if (
-        existingVoteIndex >= 0 &&
-        thread.votes[existingVoteIndex].voteType === voteType
-      ) {
-        thread.votes = thread.votes.filter((v) => v.userId !== userId);
-      }
-      // Case 2: Changing vote type or new vote
-      else {
-        const newVote = { userId, voteType };
-
-        if (existingVoteIndex >= 0) {
-          // Update existing vote
-          thread.votes[existingVoteIndex] = newVote;
-        } else {
-          // Add new vote
-          thread.votes.push(newVote);
-        }
-      }
-
-      await threadService.updateThread(threadId, { votes: thread.votes });
+      const updatedVotes = forumUtils.handleThreadVote(thread, voteType);
+      await threadService.updateThread(threadId, { votes: updatedVotes });
 
       await getAllThreads();
     } catch (error) {
@@ -242,7 +218,6 @@ export default function ForumPage() {
                 <div
                   key={thread._id}
                   className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-200"
-                  onClick={() => handleThreadClick(thread)}
                 >
                   <div className="p-6">
                     <div className="flex items-start space-x-4">
@@ -294,7 +269,10 @@ export default function ForumPage() {
                           </span>
                         </div>
 
-                        <h3 className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 cursor-pointer">
+                        <h3
+                          className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 cursor-pointer"
+                          onClick={() => handleThreadClick(thread)}
+                        >
                           {thread.title}
                         </h3>
 

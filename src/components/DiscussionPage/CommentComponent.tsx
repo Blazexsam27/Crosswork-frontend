@@ -1,5 +1,6 @@
 import type { Comment } from "@/types/forums/forumTypes";
 import { formatTimeAgo } from "@/utils/time.utils";
+import { getFromLocalStorage } from "@/utils/webstorage.utls";
 import { ArrowDown, ArrowUp, Heart, MoreHorizontal } from "lucide-react";
 
 export default function CommentComponent({
@@ -25,6 +26,8 @@ export default function CommentComponent({
   replyContent: string;
   setReplyContent: Function;
 }) {
+  const user = getFromLocalStorage("user");
+
   return (
     <div className={`${isReply ? "ml-8 border-l-2 border-gray-100 pl-4" : ""}`}>
       <div className="flex space-x-3">
@@ -54,7 +57,7 @@ export default function CommentComponent({
             </span>
 
             <button
-              onClick={() => handleLikeComment(comment._id, isReply, parentId)}
+              onClick={() => handleLikeComment(comment._id)}
               className={`text-xs font-medium transition-colors ${
                 comment.userLiked
                   ? "text-red-600"
@@ -103,22 +106,24 @@ export default function CommentComponent({
               </button>
             </div>
 
-            {comment.likes > 0 && (
+            {comment.likes.length > 0 && (
               <div className="flex items-center space-x-1">
                 <Heart
                   className={`w-3 h-3 ${
-                    comment.userLiked
+                    comment.likes.includes(user._id)
                       ? "text-red-600 fill-current"
                       : "text-gray-400"
                   }`}
                 />
-                <span className="text-xs text-gray-500">{comment.likes}</span>
+                <span className="text-xs text-gray-500">
+                  {comment.likes.length}
+                </span>
               </div>
             )}
 
-            <button className="text-gray-400 hover:text-gray-600 transition-colors">
+            {/* <button className="text-gray-400 hover:text-gray-600 transition-colors">
               <MoreHorizontal className="w-3 h-3" />
-            </button>
+            </button> */}
           </div>
 
           {replyingTo === comment._id && (

@@ -73,6 +73,6 @@ export interface Comment {
   userVote: "up" | "down" | null;
   createdAt: string;
   replies: Comment[];
-  likes: number;
+  likes: string[];
   userLiked: boolean;
 }
