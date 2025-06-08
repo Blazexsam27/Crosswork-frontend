@@ -1,54 +1,54 @@
-# React + TypeScript + Vite
+# Crosswork
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Crosswork is a collaborative web platform designed for students to connect, communicate, and grow together based on shared academic interests, skills, and goals.
 
-Currently, two official plugins are available:
+Built using a powerful tech stack, Crosswork provides seamless messaging, video calling, forums, and personalized recommendations — all tailored for a student community.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## Expanding the ESLint configuration
+## 🚀 Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- 🔗 **Connect with Like-Minded Students**  
+  Build a professional student network similar to LinkedIn based on shared skills and interests.
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+- 💬 **Real-time Messaging & Video Calls**  
+  Communicate instantly using chat and video rooms powered by Socket.IO and WebRTC.
+
+- 🎯 **Smart Recommendation System**  
+  Get suggestions for connections using a custom FastAPI backend with scikit-learn-based recommendation logic.
+
+- 🌐 **Global Forums & Discussions**  
+  Participate in open forums and threaded discussions — like, upvote, and downvote content in real-time.
+
+- 🔐 **Authentication & Security**  
+  Secure login via email/password and OAuth2 support for Google and GitHub accounts.
+
+- 🧑‍💼 **Dynamic Profile Management**  
+  Update your language preferences, technical skills, and interests to personalize your experience.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Frontend**: React + TypeScript + Shadcn/UI
+- **Backend**: Express.js + MongoDB + Socket.IO + WebRTC
+- **Recommendation System**: FastAPI + scikit-learn
+- **Authentication**: Email/Password, OAuth2 (Google, GitHub)
+
+---
+
+## 🧪 Local Development
+
+### Prerequisites
+- Node.js (v18+)
+- MongoDB
+- Python 3.9+
+- `virtualenv` (for FastAPI service)
+
+### Clone the Repository
+```bash
+git clone [https://github.com//crosswork.git](https://github.com/Blazexsam27/Crosswork-frontend)
+cd crosswork
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
