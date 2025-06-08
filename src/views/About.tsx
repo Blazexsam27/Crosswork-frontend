@@ -52,8 +52,8 @@ export default function AboutPage() {
                 or institution.
               </p>
             </div>
-            <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl p-8">
-              <div className="aspect-video relative bg-white rounded-xl overflow-hidden shadow-lg">
+            <div className="bg-gradient-to-br from-blue-100 to-purple-100 rounded-sm p-8">
+              <div className="aspect-video relative bg-white rounded-sm overflow-hidden shadow-lg">
                 <img
                   src="/assets/about_1.jpg"
                   alt="Students collaborating"
@@ -79,7 +79,7 @@ export default function AboutPage() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div className="bg-white rounded-sm shadow-md p-6 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
                 <Video className="w-6 h-6 text-blue-600" />
               </div>
@@ -92,7 +92,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div className="bg-white rounded-sm shadow-md p-6 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mb-4">
                 <MessageCircle className="w-6 h-6 text-purple-600" />
               </div>
@@ -105,7 +105,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div className="bg-white rounded-sm shadow-md p-6 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-4">
                 <Users className="w-6 h-6 text-green-600" />
               </div>
@@ -118,7 +118,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-shadow">
+            <div className="bg-white rounded-sm shadow-md p-6 hover:shadow-lg transition-shadow">
               <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mb-4">
                 <BookOpen className="w-6 h-6 text-yellow-600" />
               </div>
@@ -204,7 +204,7 @@ export default function AboutPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="bg-white rounded-sm shadow-md p-6">
               <div className="flex items-center mb-4">
                 <div className="mr-4">
                   <Smile className="w-16 h-16 text-purple-500" />
@@ -224,7 +224,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="bg-white rounded-sm shadow-md p-6">
               <div className="flex items-center mb-4">
                 <div className="mr-4">
                   <Smile className="w-16 h-16 text-purple-500" />
@@ -244,7 +244,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-white rounded-xl shadow-md p-6">
+            <div className="bg-white rounded-sm shadow-md p-6">
               <div className="flex items-center mb-4">
                 <div className="mr-4">
                   <Smile className="w-16 h-16 text-purple-500" />
@@ -280,7 +280,7 @@ export default function AboutPage() {
           </div>
 
           <div className="space-y-6">
-            <div className="bg-gray-50 rounded-xl p-6">
+            <div className="bg-gray-50 rounded-sm p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 Is CrossWork free to use?
               </h3>
@@ -292,7 +292,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-6">
+            <div className="bg-gray-50 rounded-sm p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 Do I need to download any software?
               </h3>
@@ -302,7 +302,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-6">
+            <div className="bg-gray-50 rounded-sm p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 How many people can join a video study room?
               </h3>
@@ -313,7 +313,7 @@ export default function AboutPage() {
               </p>
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-6">
+            <div className="bg-gray-50 rounded-sm p-6">
               <h3 className="text-xl font-semibold text-gray-900 mb-2">
                 Is my data secure on CrossWork?
               </h3>
@@ -331,7 +331,7 @@ export default function AboutPage() {
             </p>
             <NavLink
               to="/contact"
-              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-sm hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
             >
               Contact Us <ArrowRight className="ml-2 w-4 h-4" />
             </NavLink>
@@ -352,13 +352,13 @@ export default function AboutPage() {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <NavLink
               to="/signup"
-              className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-colors shadow-lg"
+              className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-sm hover:bg-blue-50 transition-colors shadow-lg"
             >
               Sign Up Free
             </NavLink>
             <NavLink
               to="/create-video-room"
-              className="px-8 py-4 bg-blue-800 bg-opacity-50 text-white font-semibold rounded-xl hover:bg-opacity-70 transition-colors"
+              className="px-8 py-4 bg-blue-800 bg-opacity-50 text-white font-semibold rounded-sm hover:bg-opacity-70 transition-colors"
             >
               Create a Study Room
             </NavLink>

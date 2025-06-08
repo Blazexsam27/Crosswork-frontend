@@ -82,7 +82,7 @@ export default function CreateRoom() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
         <div className="max-w-2xl w-full">
-          <div className="bg-white rounded-2xl shadow-xl p-8 text-center">
+          <div className="bg-white rounded-sm shadow-xl p-8 text-center">
             <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
               <Check className="w-8 h-8 text-green-600" />
             </div>
@@ -94,7 +94,7 @@ export default function CreateRoom() {
               Your video chat room is ready. Share the link with participants.
             </p>
 
-            <div className="bg-gray-50 rounded-xl p-6 mb-8">
+            <div className="bg-gray-50 rounded-sm p-6 mb-8">
               <div className="space-y-4">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -181,7 +181,7 @@ export default function CreateRoom() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button
                 onClick={handleJoinRoom}
-                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-sm hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
               >
                 Join Room Now
               </button>
@@ -200,7 +200,7 @@ export default function CreateRoom() {
                     duration: 60,
                   });
                 }}
-                className="px-8 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors"
+                className="px-8 py-3 border border-gray-300 text-gray-700 font-semibold rounded-sm hover:bg-gray-50 transition-colors"
               >
                 Create Another Room
               </button>
@@ -223,7 +223,7 @@ export default function CreateRoom() {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8">
+        <div className="bg-white rounded-sm shadow-xl p-8">
           <form onSubmit={handleCreateRoom} className="space-y-6">
             {/* Room Name */}
             <div>
@@ -234,7 +234,7 @@ export default function CreateRoom() {
                 type="text"
                 value={settings.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="e.g., Advanced Calculus Study Group"
                 required
               />
@@ -251,7 +251,7 @@ export default function CreateRoom() {
                   handleInputChange("description", e.target.value)
                 }
                 rows={3}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 placeholder="Brief description of the session..."
               />
             </div>
@@ -271,7 +271,7 @@ export default function CreateRoom() {
                       Number.parseInt(e.target.value)
                     )
                   }
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value={5}>5 participants</option>
                   <option value={10}>10 participants</option>
@@ -294,7 +294,7 @@ export default function CreateRoom() {
                       Number.parseInt(e.target.value)
                     )
                   }
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value={30}>30 minutes</option>
                   <option value={60}>1 hour</option>
@@ -316,7 +316,7 @@ export default function CreateRoom() {
                 onChange={(e) =>
                   handleInputChange("scheduledTime", e.target.value)
                 }
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 min={new Date().toISOString().slice(0, 16)}
               />
               <p className="text-sm text-gray-500 mt-1">
@@ -389,7 +389,7 @@ export default function CreateRoom() {
               <button
                 type="submit"
                 disabled={isCreating || !settings.name.trim()}
-                className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="w-full py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-sm hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {isCreating ? (
                   <span className="flex items-center justify-center">

@@ -12,7 +12,7 @@ export default function ParticipantVideo({
 }) {
   return (
     <div
-      className={`relative bg-gray-900 rounded-xl overflow-hidden ${
+      className={`relative bg-gray-900 rounded-sm overflow-hidden ${
         isMain ? "aspect-video" : "aspect-square"
       } group`}
     >
@@ -75,7 +75,7 @@ export default function ParticipantVideo({
           ref={videoRef}
           autoPlay
           muted
-          className="w-full h-full rounded-xl border"
+          className="w-full h-full rounded-sm border"
         />
         <button className="bg-white bg-opacity-20 rounded-full p-2 text-white hover:bg-opacity-30 transition-colors">
           <MoreVertical className="w-4 h-4" />

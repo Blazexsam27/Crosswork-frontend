@@ -1,4 +1,6 @@
 import { NavLink } from "react-router-dom";
+import { GalleryThumbnails } from "lucide-react";
+import { FaMedium } from "react-icons/fa";
 
 export default function Footer() {
   return (
@@ -18,24 +20,15 @@ export default function Footer() {
             </p>
             <div className="flex space-x-4">
               <a
-                href="#"
+                href="https://sanju-raj-prasad-portfolio.netlify.app/"
+                target="_blank"
                 className="text-gray-400 hover:text-white transition-colors"
               >
-                <svg
-                  className="w-6 h-6"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-                    clipRule="evenodd"
-                  />
-                </svg>
+                <GalleryThumbnails />
               </a>
               <a
-                href="#"
+                href="https://x.com/blazexsam_dev"
+                target="_blank"
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <svg
@@ -48,7 +41,8 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="#"
+                href="https://www.instagram.com/blazexsam_dev/"
+                target="_blank"
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <svg
@@ -65,7 +59,8 @@ export default function Footer() {
                 </svg>
               </a>
               <a
-                href="#"
+                href="https://github.com/Blazexsam27"
+                target="_blank"
                 className="text-gray-400 hover:text-white transition-colors"
               >
                 <svg
@@ -80,6 +75,13 @@ export default function Footer() {
                     clipRule="evenodd"
                   />
                 </svg>
+              </a>
+              <a
+                href="https://medium.com/@blazesam275"
+                target="_blank"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <FaMedium />
               </a>
             </div>
           </div>
@@ -106,7 +108,7 @@ export default function Footer() {
               </li>
               <li>
                 <NavLink
-                  to="/forum"
+                  to="/forums"
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   Forum
@@ -118,14 +120,6 @@ export default function Footer() {
                   className="text-gray-400 hover:text-white transition-colors"
                 >
                   Connections
-                </NavLink>
-              </li>
-              <li>
-                <NavLink
-                  to="/contact"
-                  className="text-gray-400 hover:text-white transition-colors"
-                >
-                  Contact
                 </NavLink>
               </li>
             </ul>
@@ -214,14 +208,8 @@ export default function Footer() {
           <p className="text-gray-400 text-sm">
             © {new Date().getFullYear()} CrossWork. All rights reserved.
           </p>
-          <div className="mt-4 md:mt-0">
-            <select className="bg-gray-800 text-gray-400 text-sm rounded-lg px-3 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500">
-              <option value="en">English (US)</option>
-              <option value="es">Español</option>
-              <option value="fr">Français</option>
-              <option value="de">Deutsch</option>
-            </select>
-          </div>
+
+          <p className="text-gray-400 text-sm">Made by Blazexsam_dev</p>
         </div>
       </div>
     </footer>

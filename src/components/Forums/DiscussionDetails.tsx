@@ -196,7 +196,7 @@ export default function DiscussionDetail() {
     parentId?: string;
   }) => (
     <div className={`${isReply ? "ml-8 border-l-2 border-gray-200 pl-4" : ""}`}>
-      <div className="bg-white rounded-xl border border-gray-200 p-4">
+      <div className="bg-white rounded-sm border border-gray-200 p-4">
         <div className="flex items-start space-x-3">
           <div className="flex flex-col items-center space-y-1">
             <button
@@ -337,7 +337,7 @@ export default function DiscussionDetail() {
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Share your thoughts or ask a follow-up question..."
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+            className="w-full px-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
             rows={4}
           />
           <div className="flex justify-end mt-3">

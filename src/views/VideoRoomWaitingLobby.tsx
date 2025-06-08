@@ -123,13 +123,13 @@ export default function WaitingLobby() {
         <div className="grid lg:grid-cols-2 gap-8 items-center">
           {/* Video Preview */}
           <div className="order-2 lg:order-1">
-            <div className="bg-white rounded-2xl shadow-xl p-6">
+            <div className="bg-white rounded-sm shadow-xl p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Camera Preview
               </h3>
 
               {/* Video Preview Area */}
-              <div className="relative bg-gray-900 rounded-xl overflow-hidden aspect-video mb-4">
+              <div className="relative bg-gray-900 rounded-sm overflow-hidden aspect-video mb-4">
                 {videoOn && mediaStream ? (
                   <video
                     ref={videoRef}
@@ -223,7 +223,7 @@ export default function WaitingLobby() {
                   type="text"
                   value={userName}
                   onChange={(e) => setUserName(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="Enter your name"
                 />
               </div>
@@ -237,7 +237,7 @@ export default function WaitingLobby() {
                 Ready to join?
               </h1>
 
-              <div className="bg-white rounded-2xl shadow-xl p-6 mb-6">
+              <div className="bg-white rounded-sm shadow-xl p-6 mb-6">
                 <div className="space-y-4">
                   <div>
                     <h2 className="text-xl font-semibold text-gray-900 mb-2">
@@ -290,7 +290,7 @@ export default function WaitingLobby() {
               <button
                 onClick={handleJoinRoom}
                 disabled={isJoining || !userName.trim()}
-                className="w-full lg:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="w-full lg:w-auto px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-sm hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200 transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {isJoining ? (
                   <span className="flex items-center justify-center">

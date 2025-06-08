@@ -1,7 +1,4 @@
-import type {
-  CreateDiscussionModalProps,
-  Discussion,
-} from "@/types/forums/forumTypes";
+import type { CreateDiscussionModalProps } from "@/types/forums/forumTypes";
 import React, { useState } from "react";
 import { subjects } from "./static";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
@@ -10,7 +7,41 @@ function DiscussionModal({ onClose, onSubmit }: CreateDiscussionModalProps) {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [subject, setSubject] = useState("");
+  const [tagInput, setTagInput] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
   const user = getFromLocalStorage("user");
+
+  const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTagInput(e.target.value);
+  };
+
+  const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // If Enter or Space is pressed and there's content starting with #
+    if ((e.key === "Enter" || e.key === " ") && tagInput.trim()) {
+      e.preventDefault();
+
+      // Process the tag (remove # if it exists at the beginning)
+      let newTag = tagInput.trim();
+      if (newTag.startsWith("#")) {
+        newTag = newTag.substring(1);
+      }
+
+      // Only add non-empty tags that don't already exist
+      if (newTag && !tags.includes(newTag)) {
+        setTags([...tags, newTag]);
+      }
+
+      // Clear the input
+      setTagInput("");
+    } else if (e.key === "Backspace" && tagInput === "" && tags.length > 0) {
+      // Remove the last tag when backspace is pressed on empty input
+      setTags(tags.slice(0, -1));
+    }
+  };
+
+  const removeTag = (tagToRemove: string) => {
+    setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,6 +53,7 @@ function DiscussionModal({ onClose, onSubmit }: CreateDiscussionModalProps) {
       content,
       category: subject,
       author: user._id,
+      tags,
     };
     onSubmit(threadData);
   };
@@ -81,7 +113,39 @@ function DiscussionModal({ onClose, onSubmit }: CreateDiscussionModalProps) {
                 required
               />
             </div>
-
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Tags
+              </label>
+              <div className="flex flex-wrap items-center gap-2 p-2 border border-gray-300 rounded-xl focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent">
+                {tags.map((tag, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm"
+                  >
+                    #{tag}
+                    <button
+                      type="button"
+                      onClick={() => removeTag(tag)}
+                      className="ml-2 text-blue-600 hover:text-blue-800 focus:outline-none"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
+                <input
+                  type="text"
+                  value={tagInput}
+                  onChange={handleTagInputChange}
+                  onKeyDown={handleTagInputKeyDown}
+                  className="flex-1 min-w-[120px] outline-none border-none py-1 px-2 text-gray-700 placeholder-gray-400"
+                  placeholder="Type # and add tags..."
+                />
+              </div>
+              <p className="mt-1 text-xs text-gray-500">
+                Type # followed by tag name and press space or enter to add
+              </p>
+            </div>
             <div className="flex justify-end space-x-4 pt-4">
               <button
                 type="button"

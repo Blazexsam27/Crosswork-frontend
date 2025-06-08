@@ -6,10 +6,12 @@ import axios from "../config/axios.config";
  */
 
 class ConnectService {
+  endpoint = "/api/connect";
+
   sendConnectRequest = async (targetUserId: string, senderId: string) => {
     try {
       const response = await axios.post(
-        `/api/connect?targetId=${targetUserId}&senderId=${senderId}`
+        `${this.endpoint}?targetId=${targetUserId}&senderId=${senderId}`
       );
       return response.data;
     } catch (error) {
@@ -20,7 +22,7 @@ class ConnectService {
   acceptRequest = async (targetUserId: string, senderId: string) => {
     try {
       const response = await axios.post(
-        `/api/connect/accept?targetId=${targetUserId}&senderId=${senderId}`
+        `${this.endpoint}/accept?targetId=${targetUserId}&senderId=${senderId}`
       );
       return response.data;
     } catch (error) {
@@ -31,7 +33,18 @@ class ConnectService {
   declineRequest = async (targetUserId: string, senderId: string) => {
     try {
       const response = await axios.post(
-        `/api/connect/decline?targetId=${targetUserId}&senderId=${senderId}`
+        `${this.endpoint}/decline?targetId=${targetUserId}&senderId=${senderId}`
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
+
+  disconnect = async (targetUserId: string, senderId: string) => {
+    try {
+      const response = await axios.post(
+        `${this.endpoint}/disconnect?targetId=${targetUserId}&senderId=${senderId}`
       );
       return response.data;
     } catch (error: any) {

@@ -80,6 +80,7 @@ export default function ForumPage() {
   ): Promise<void> {
     try {
       await threadService.createThread(newDiscussion);
+      setShowCreateModal(false);
     } catch (error) {
       console.error("Error while creating thread", error);
     }
@@ -118,7 +119,7 @@ export default function ForumPage() {
             </div>
             <button
               onClick={() => setShowCreateModal(true)}
-              className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
+              className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-sm hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
             >
               <Plus className="w-5 h-5" />
               <span>Start Discussion</span>
@@ -134,7 +135,7 @@ export default function ForumPage() {
                 placeholder="Search discussions..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <div className="flex gap-2">
@@ -143,7 +144,7 @@ export default function ForumPage() {
                 onChange={(e) =>
                   setSortBy(e.target.value as "hot" | "new" | "top")
                 }
-                className="px-2 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                className="px-2 py-2 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="hot">🔥 Trending</option>
                 <option value="new">🕒 New</option>
@@ -156,7 +157,7 @@ export default function ForumPage() {
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
+            <div className="bg-white rounded-sm shadow-lg p-6 sticky top-24">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Subjects
               </h3>
@@ -188,26 +189,6 @@ export default function ForumPage() {
                   </button>
                 ))}
               </div>
-
-              <div className="mt-8">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Forum Stats
-                </h3>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Total Discussions</span>
-                    <span className="font-semibold">469</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Active Users</span>
-                    <span className="font-semibold">1,234</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">This Week</span>
-                    <span className="font-semibold">89 new</span>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -217,7 +198,7 @@ export default function ForumPage() {
               {filteredThreads.map((thread: ThreadRetrieveType) => (
                 <div
                   key={thread._id}
-                  className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-200"
+                  className="bg-white rounded-sm shadow-lg hover:shadow-xl transition-shadow duration-200"
                 >
                   <div className="p-6">
                     <div className="flex items-start space-x-4">

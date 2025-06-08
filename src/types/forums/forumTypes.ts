@@ -25,6 +25,7 @@ export type ThreadCreateType = {
   category: string;
   content: string;
   author: string;
+  tags: string[];
 };
 
 export type VoteType = { userId: string; voteType: string };
@@ -43,6 +44,7 @@ export type ThreadRetrieveType = {
   updatedAt: string;
   votes: VoteType[];
   likes: string[];
+  tags: string[];
 };
 
 export interface Discussion {

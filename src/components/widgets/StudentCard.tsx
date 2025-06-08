@@ -1,5 +1,4 @@
 import type { StudentCardProps } from "@/types/user/userTypes";
-import { getFromLocalStorage } from "@/utils/webstorage.utls";
 import { Check, MessageCircle, Smile, UserPlus, X } from "lucide-react";
 
 export default function StudentCard({
@@ -11,8 +10,6 @@ export default function StudentCard({
   connectionStates,
 }: StudentCardProps) {
   const connectionStatus = connectionStates[student._id] || "none";
-
-  const user = getFromLocalStorage("user");
 
   const getConnectionButton = () => {
     switch (connectionStatus) {

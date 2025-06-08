@@ -10,6 +10,7 @@ import {
   Smile,
   UsersRound,
 } from "lucide-react";
+import Footer from "@/components/Footer/Footer";
 function Home() {
   return (
     <div className="">
@@ -61,8 +62,8 @@ function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl shadow-md p-8 hover:shadow-lg transition-shadow">
-              <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
+            <div className="bg-white rounded-sm shadow-md p-8 hover:shadow-lg transition-shadow">
+              <div className="w-14 h-14 bg-blue-100 rounded-sm flex items-center justify-center mb-6">
                 <Video className="w-7 h-7 text-blue-600" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
@@ -81,8 +82,8 @@ function Home() {
               </NavLink>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-md p-8 hover:shadow-lg transition-shadow">
-              <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
+            <div className="bg-white rounded-sm shadow-md p-8 hover:shadow-lg transition-shadow">
+              <div className="w-14 h-14 bg-purple-100 rounded-sm flex items-center justify-center mb-6">
                 <MessageCircle className="w-7 h-7 text-purple-600" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
@@ -100,8 +101,8 @@ function Home() {
               </NavLink>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-md p-8 hover:shadow-lg transition-shadow">
-              <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-6">
+            <div className="bg-white rounded-sm shadow-md p-8 hover:shadow-lg transition-shadow">
+              <div className="w-14 h-14 bg-green-100 rounded-sm flex items-center justify-center mb-6">
                 <Users className="w-7 h-7 text-green-600" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
@@ -198,7 +199,7 @@ function Home() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl shadow-md p-8 relative">
+            <div className="bg-white rounded-sm shadow-md p-8 relative">
               <div className="absolute -top-4 -left-4 text-purple-500">
                 <svg
                   width="40"
@@ -243,7 +244,7 @@ function Home() {
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-md p-8 relative">
+            <div className="bg-white rounded-sm shadow-md p-8 relative">
               <div className="absolute -top-4 -left-4 text-purple-500">
                 <svg
                   width="40"
@@ -288,7 +289,7 @@ function Home() {
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-md p-8 relative">
+            <div className="bg-white rounded-sm shadow-md p-8 relative">
               <div className="absolute -top-4 -left-4 text-purple-500">
                 <svg
                   width="40"
@@ -351,7 +352,7 @@ function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white border border-gray-200 rounded-xl hover:shadow-md transition-shadow">
+            <div className="bg-white border border-gray-200 rounded-sm hover:shadow-md transition-shadow">
               <div className="p-6">
                 <div className="flex items-center space-x-2 mb-3">
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -383,7 +384,7 @@ function Home() {
               </div>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-xl hover:shadow-md transition-shadow">
+            <div className="bg-white border border-gray-200 rounded-sm hover:shadow-md transition-shadow">
               <div className="p-6">
                 <div className="flex items-center space-x-2 mb-3">
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
@@ -412,7 +413,7 @@ function Home() {
               </div>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-xl hover:shadow-md transition-shadow">
+            <div className="bg-white border border-gray-200 rounded-sm hover:shadow-md transition-shadow">
               <div className="p-6">
                 <div className="flex items-center space-x-2 mb-3">
                   <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -460,7 +461,7 @@ function Home() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+            <div className="bg-white rounded-sm shadow-md overflow-hidden">
               <div className="h-40 bg-gradient-to-r from-blue-500 to-purple-600 relative">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Video className="w-12 h-12 text-white opacity-75" />
@@ -494,7 +495,7 @@ function Home() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+            <div className="bg-white rounded-sm shadow-md overflow-hidden">
               <div className="h-40 bg-gradient-to-r from-green-500 to-teal-600 relative">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Video className="w-12 h-12 text-white opacity-75" />
@@ -528,7 +529,7 @@ function Home() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+            <div className="bg-white rounded-sm shadow-md overflow-hidden">
               <div className="h-40 bg-gradient-to-r from-purple-500 to-pink-600 relative">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <Video className="w-12 h-12 text-white opacity-75" />
@@ -578,19 +579,21 @@ function Home() {
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <NavLink
               to="/signup"
-              className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-xl hover:bg-blue-50 transition-colors shadow-lg"
+              className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-sm hover:bg-blue-50 transition-colors shadow-lg"
             >
               Sign Up Free
             </NavLink>
             <NavLink
               to="/forums"
-              className="px-8 py-4 bg-blue-800 bg-opacity-50 text-white font-semibold rounded-xl hover:bg-opacity-70 transition-colors"
+              className="px-8 py-4 bg-blue-800 bg-opacity-50 text-white font-semibold rounded-sm hover:bg-opacity-70 transition-colors"
             >
               Checkout Forums
             </NavLink>
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

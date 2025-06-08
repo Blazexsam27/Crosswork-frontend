@@ -89,7 +89,7 @@ export default function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-2xl shadow-xl mt-4 ">
+    <div className="w-full max-w-md mx-auto p-6 bg-white rounded-sm shadow-xl mt-4 ">
       {showErrorAlert && (
         <Alert
           variant="destructive"
@@ -124,7 +124,7 @@ export default function LoginForm() {
             type="email"
             value={formData.email}
             onChange={handleChange}
-            className={`w-full px-4 py-3 rounded-xl border ${
+            className={`w-full px-4 py-3 rounded-sm border ${
               errors.email ? "border-red-500" : "border-gray-300"
             } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200`}
             placeholder="you@example.com"
@@ -155,7 +155,7 @@ export default function LoginForm() {
             type="password"
             value={formData.password}
             onChange={handleChange}
-            className={`w-full px-4 py-3 rounded-xl border ${
+            className={`w-full px-4 py-3 rounded-sm border ${
               errors.password ? "border-red-500" : "border-gray-300"
             } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200`}
             placeholder="Enter your password"
@@ -183,7 +183,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
+          className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-sm hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-300 transform hover:scale-[1.02] shadow-lg disabled:opacity-70 disabled:cursor-not-allowed"
         >
           {loading ? (
             <span className="flex items-center justify-center">
@@ -242,7 +242,7 @@ export default function LoginForm() {
         <div className="mt-6 grid grid-cols-2 gap-3">
           <button
             type="button"
-            className="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-sm shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             onClick={() => loginWithOAuth("google")}
           >
             <svg
@@ -272,7 +272,7 @@ export default function LoginForm() {
 
           <button
             type="button"
-            className="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-xl shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+            className="w-full inline-flex justify-center py-3 px-4 border border-gray-300 rounded-sm shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
             onClick={() => loginWithOAuth("github")}
           >
             <svg

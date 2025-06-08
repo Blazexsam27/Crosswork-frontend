@@ -1,15 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Search,
-  Filter,
-  Users,
-  MessageCircle,
-  UserPlus,
-  Check,
-  X,
-} from "lucide-react";
+import { Search, Filter, Users } from "lucide-react";
 import userService from "@/services/user.service";
 import { interests } from "@/static/Connect";
 import { subjects } from "@/static/Connect";
@@ -18,153 +10,7 @@ import { ToastContainer, toast } from "react-toastify";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
 import StudentCard from "@/components/widgets/StudentCard";
 import type { Student } from "@/types/user/userTypes";
-
-interface StudentProfileModalProps {
-  student: Student;
-  onClose: () => void;
-  onConnect: (id: string) => void;
-  onCancelRequest: (id: string) => void;
-  connectionStates: Record<string, "none" | "pending" | "connected">;
-}
-
-function StudentProfileModal({
-  student,
-  onClose,
-  onConnect,
-  onCancelRequest,
-  connectionStates,
-}: StudentProfileModalProps) {
-  const connectionStatus = connectionStates[student._id] || "none";
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex items-start justify-between mb-6">
-            <div className="flex items-start space-x-4">
-              <div className="relative">
-                <img
-                  src={
-                    student.profilePic || "/placeholder.svg?height=80&width=80"
-                  }
-                  alt={student.name}
-                  className="w-20 h-20 rounded-full object-cover"
-                />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  {student.name}
-                </h2>
-                <p className="text-gray-600">
-                  {student.subjects.slice(0, 2).join(" • ")}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                About
-              </h3>
-              <p className="text-gray-700">{student.bio}</p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                Interests
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {student.interests.map((interest) => (
-                  <span
-                    key={interest}
-                    className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
-                  >
-                    {interest}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                Subjects
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {student.subjects.map((subject) => (
-                  <span
-                    key={subject}
-                    className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm"
-                  >
-                    {subject}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">
-                Languages
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {student.languages.map((language) => (
-                  <span
-                    key={language}
-                    className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm"
-                  >
-                    {language}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex space-x-4 pt-4">
-              {connectionStatus === "none" && (
-                <button
-                  onClick={() => {
-                    onConnect(student._id);
-                    onClose();
-                  }}
-                  className="flex-1 flex items-center justify-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
-                >
-                  <UserPlus className="w-5 h-5" />
-                  <span>Connect</span>
-                </button>
-              )}
-              {connectionStatus === "pending" && (
-                <button
-                  onClick={() => {
-                    onCancelRequest(student._id);
-                    onClose();
-                  }}
-                  className="flex-1 flex items-center justify-center space-x-2 px-6 py-3 bg-yellow-100 text-yellow-800 rounded-xl hover:bg-yellow-200 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                  <span>Cancel Request</span>
-                </button>
-              )}
-              {connectionStatus === "connected" && (
-                <button className="flex-1 flex items-center justify-center space-x-2 px-6 py-3 bg-green-100 text-green-800 rounded-xl">
-                  <Check className="w-5 h-5" />
-                  <span>Connected</span>
-                </button>
-              )}
-              <button className="flex-1 flex items-center justify-center space-x-2 px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors">
-                <MessageCircle className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+import StudentProfileModal from "@/components/Connect/StudentProfileModal";
 
 export default function ConnectionsPage() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -198,6 +44,16 @@ export default function ConnectionsPage() {
       ...prev,
       [studentId]: "none",
     }));
+  };
+
+  const handleDisconnect = async (studentId: string) => {
+    try {
+      await connectService.disconnect(studentId, user._id);
+      setSelectedStudent(null);
+      await getAllUsers();
+    } catch (error) {
+      console.error("Error while disconnecting:", error);
+    }
   };
 
   const toggleInterest = (interest: string) => {
@@ -244,18 +100,18 @@ export default function ConnectionsPage() {
 
       const recommendations =
         getFromLocalStorage("recommendations")?.recommendations;
+      if (recommendations) {
+        const top3 = recommendations
+          .slice(0, 3)
+          .map((student: any) => student.id);
+        let temp: Student[] = [];
+        response.map((student: Student) => {
+          if (top3.includes(student._id)) temp.push(student);
+        });
+        setSuggestedStudents(temp);
+      }
 
-      const top3 = recommendations
-        .slice(0, 3)
-        .map((student: any) => student.id);
-      let temp: Student[] = [];
-      response.map((student: Student) => {
-        if (top3.includes(student._id)) temp.push(student);
-      });
-      console.log("---", temp);
-      setSuggestedStudents(temp);
-
-      // update the connection statuses
+      // update the connection status
       let connections: Record<string, "connected" | "pending" | "none"> = {};
       response.map((student: Student) => {
         if (user.connections.includes(student._id)) {
@@ -305,12 +161,12 @@ export default function ConnectionsPage() {
                   placeholder="Search by name, subjects, or interests..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-white w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="bg-white w-full pl-10 pr-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="bg-slate-700 text-slate-50 flex items-center space-x-2 px-6 py-3 border border-gray-300 rounded-xl hover:bg-gray-600 transition-colors"
+                className="bg-slate-700 text-slate-50 flex items-center space-x-2 px-6 py-3 border border-gray-300 rounded-sm hover:bg-gray-600 transition-colors"
               >
                 <Filter className="w-5 h-5" />
                 <span>Filters</span>
@@ -319,7 +175,7 @@ export default function ConnectionsPage() {
 
             {/* Filter Panel */}
             {showFilters && (
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <div className="bg-white rounded-sm border border-gray-200 p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -486,7 +342,8 @@ export default function ConnectionsPage() {
           onClose={() => setSelectedStudent(null)}
           onConnect={handleConnect}
           onCancelRequest={handleCancelRequest}
-          connectionStates={connectionStates}
+          connectionStatus={connectionStates}
+          handleDisconnect={handleDisconnect}
         />
       )}
     </div>
