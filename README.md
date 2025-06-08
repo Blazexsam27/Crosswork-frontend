@@ -48,7 +48,13 @@ Built using a powerful tech stack, Crosswork provides seamless messaging, video 
 ### Clone the Repository
 ```bash
 git clone [https://github.com//crosswork.git](https://github.com/Blazexsam27/Crosswork-frontend)
-cd crosswork
+cd crosswork-frontend
 npm run dev
 ```
 
+### Similarly clone the backend repo
+```bash
+git clone [[https://github.com//crosswork.git](https://github.com/Blazexsam27/Crosswork-backend)](https://github.com/Blazexsam27/Crosswork-backend)
+cd crosswork-backend
+npm run dev
+```
