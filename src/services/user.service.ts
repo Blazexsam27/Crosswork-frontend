@@ -21,6 +21,17 @@ class UserService {
     }
   };
 
+  getAllConnections = async (userId: string) => {
+    try {
+      const response = await axios.get(
+        `/api/users/get-all-connections/${userId}`
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
+
   updateUser = async (updatedData: Partial<UserProfile>) => {
     try {
       const response = await axios.put("/api/users/update-user", updatedData);
