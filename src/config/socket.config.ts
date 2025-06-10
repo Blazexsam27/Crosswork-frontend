@@ -7,8 +7,7 @@ import {
 } from "../features/socket/socketSlice";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
 
-const SERVER_URL =
-  import.meta.env.VITE_PUBLIC_BACKEND_URL || "http://localhost:8080";
+const SERVER_URL = import.meta.env.VITE_PUBLIC_BACKEND_URL;
 
 export const socketMiddleware: Middleware = (store) => {
   let socket: Socket | null = null;

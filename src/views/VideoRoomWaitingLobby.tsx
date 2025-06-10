@@ -103,7 +103,7 @@ export default function WaitingLobby() {
 
   const copyRoomLink = () => {
     navigator.clipboard.writeText(
-      `http://localhost:5173/waiting-lobby/${room.roomId}`
+      `${import.meta.env.VITE_PUBLIC_BACKEND_URL}/waiting-lobby/${room.roomId}`
     );
     setLinkCopied(true);
     setTimeout(() => setLinkCopied(false), 2000);

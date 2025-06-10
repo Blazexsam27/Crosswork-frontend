@@ -84,7 +84,9 @@ export default function LoginForm() {
 
   // handle authentication using OAuth
   const loginWithOAuth = async (provider: string) => {
-    window.location.href = `http://localhost:8080/api/auth/${provider}`;
+    window.location.href = `${
+      import.meta.env.VITE_PUBLIC_BACKEND_URL
+    }/api/auth/${provider}`;
   };
 
   return (

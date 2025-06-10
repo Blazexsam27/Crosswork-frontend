@@ -144,7 +144,7 @@ export default function VideoChatRoom() {
 
   const copyRoomLink = () => {
     navigator.clipboard.writeText(
-      `http://localhost:5173/waiting-lobby/${roomId}`
+      `${import.meta.env.VITE_PUBLIC_BACKEND_URL}/waiting-lobby/${roomId}`
     );
     // You could add a toast notification here
   };
