@@ -1,10 +1,13 @@
+import { getFromLocalStorage } from "@/utils/webstorage.utls";
 import axios from "../config/axios.config";
 import type { UserProfile } from "@/types/profile/profileTypes";
 
 class UserService {
+  authToken = getFromLocalStorage("authToken");
+
   getUser = async () => {
     try {
-      const response = await axios.get("/api/users/get-user");
+      const response = await axios.get(`/api/users/get-user/${this.authToken}`);
       return response.data;
     } catch (error: any) {
       throw new Error(error);

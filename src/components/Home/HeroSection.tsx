@@ -29,7 +29,10 @@ export default function HeroSection() {
               >
                 Get Started
               </button>
-              <button className="px-8 py-2 border-2 border-gray-300 text-slate-50 bg-slate-700 font-semibold rounded-sm hover:border-gray-400 hover:bg-gray-900 transition-all duration-300">
+              <button
+                onClick={() => navigate("/about")}
+                className="px-8 py-2 border-2 border-gray-300 text-slate-50 bg-slate-700 font-semibold rounded-sm hover:border-gray-400 hover:bg-gray-900 transition-all duration-300"
+              >
                 Learn More
               </button>
             </div>
