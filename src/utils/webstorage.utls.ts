@@ -37,7 +37,6 @@ export function setInSessionStorage(
 // check if the data is expired or not in local storage
 export function isExpiredInLocalStorage(key: string): boolean {
   const data = getFromLocalStorage(key);
-  console.log("data", data);
   // return true if data doesn't exist
   if (!data) return true;
 

@@ -46,10 +46,11 @@ function App() {
             <Route path="/signup" element={<SignupForm />}></Route>
             <Route path="/oauth-success" element={<OAuthHandler />}></Route>
             <Route path="/oauth-error" element={<SignupForm />}></Route>
+            <Route path="/about" element={<About />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<Home />} />
               <Route path="/profile" element={<UserProfile />} />
-              <Route path="/about" element={<About />} />
+
               <Route path="/forums" element={<Forums />} />
               <Route path="/forums/:id" element={<DiscussionPage />} />
               <Route path="/connect" element={<Connect />} />

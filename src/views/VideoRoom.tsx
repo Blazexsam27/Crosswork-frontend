@@ -152,7 +152,6 @@ export default function VideoChatRoom() {
   const getAllParticipants = async () => {
     try {
       const response = await roomService.getAllParticipants(roomId);
-      console.log("User------------1");
 
       return response.participants;
     } catch (error) {
@@ -170,7 +169,6 @@ export default function VideoChatRoom() {
 
       // get all other participants of the room
       const totalParticipants = await getAllParticipants();
-      console.log("total-------------------", totalParticipants);
       setParticipants(totalParticipants);
 
       //  the value of videoOn and muted is coming from waiting lobby selection
