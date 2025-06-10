@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import {
   getFromLocalStorage,
-  getFromSessionStorage,
   setInSessionStorage,
 } from "@/utils/webstorage.utls";
 import roomService from "@/services/room.service";
@@ -26,7 +25,7 @@ export default function WaitingLobby() {
   const [videoOn, setVideoOn] = useState(false);
   const [userName, setUserName] = useState("John Doe");
   const [isJoining, setIsJoining] = useState(false);
-  const [waitingTime, setWaitingTime] = useState(0);
+  const [waitingTime] = useState(0);
   const [linkCopied, setLinkCopied] = useState(false);
   const [participantCount] = useState(4);
 
@@ -40,7 +39,6 @@ export default function WaitingLobby() {
     host: "",
   });
 
-  // const { roomId, roomName, host } = getFromSessionStorage("latestRoom");
   // if user came using room link then set the data accordingly
   const roomIdFromUrl = window.location.pathname.split("/")[2];
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Search, Filter, Users } from "lucide-react";
+import { Search, Filter, Users, X } from "lucide-react";
 import userService from "@/services/user.service";
 import { interests } from "@/static/Connect";
 import { subjects } from "@/static/Connect";

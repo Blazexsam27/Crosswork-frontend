@@ -70,7 +70,7 @@ function Sidebar({
         <div className="p-4 space-y-3">
           {participants.map((participant) => (
             <div
-              key={participant.id}
+              key={participant.userId}
               className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-700 transition-colors"
             >
               <img

@@ -1,7 +1,7 @@
 import type { Comment } from "@/types/forums/forumTypes";
 import { formatTimeAgo } from "@/utils/time.utils";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
-import { ArrowDown, ArrowUp, Heart, MoreHorizontal } from "lucide-react";
+import { ArrowDown, ArrowUp, Heart } from "lucide-react";
 
 export default function CommentComponent({
   comment,

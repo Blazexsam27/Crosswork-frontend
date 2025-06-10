@@ -2,21 +2,7 @@
 
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
-import {
-  Mic,
-  MicOff,
-  Video,
-  VideoOff,
-  PhoneOff,
-  Users,
-  MessageCircle,
-  Settings,
-  Monitor,
-  Copy,
-  Hand,
-  Grid3X3,
-  Presentation,
-} from "lucide-react";
+import { Copy } from "lucide-react";
 import type {
   ChatMessage,
   Participant,

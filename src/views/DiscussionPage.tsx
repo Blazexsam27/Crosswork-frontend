@@ -94,7 +94,7 @@ export default function DiscussionPage() {
         user._id
       );
 
-      const response = await commentService.updateComment(commentId, {
+      await commentService.updateComment(commentId, {
         likes: currentLikes,
       });
 

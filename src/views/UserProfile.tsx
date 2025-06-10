@@ -1,18 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  User,
-  Clock,
-  BookOpen,
-  Calendar,
-  Camera,
-  Edit3,
-  Save,
-  X,
-  Users,
-  Smile,
-} from "lucide-react";
+import { User, Clock, BookOpen, Calendar, Users } from "lucide-react";
 import type { Room, UserProfile } from "@/types/profile/profileTypes";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
 import userService from "@/services/user.service";

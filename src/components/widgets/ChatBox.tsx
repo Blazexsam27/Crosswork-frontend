@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useRef, useCallback } from "react";
 import {
   MessageSquare,
@@ -12,7 +10,6 @@ import {
   ChevronDown,
 } from "lucide-react";
 import type { Message, MessageFromDb } from "@/types/chatbox/chatBoxTypes";
-import io, { Socket } from "socket.io-client";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
 import chatService from "@/services/chat.service";
 import type { UserType } from "@/types/user/userTypes";
@@ -35,7 +32,7 @@ export default function ChatBox() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showConnectionsList, setShowConnectionsList] = useState(true);
 
-  const [messages, setMessages] = useState<MessageFromDb[]>([]);
+  const [, setMessages] = useState<MessageFromDb[]>([]);
 
   // Filter connections based on search term
   const filteredConnections = connections.filter((connection) =>
@@ -51,7 +48,7 @@ export default function ChatBox() {
     }));
   }, []);
 
-  const { sendMessage, markAsRead } = useChatSocket(
+  const { sendMessage } = useChatSocket(
     user._id,
     handleIncomingMessage,
     (messageId) =>
@@ -79,7 +76,7 @@ export default function ChatBox() {
 
       const mp: Record<string, MessageFromDb[]> = {};
 
-      response.forEach((msg) => {
+      response.forEach((msg: MessageFromDb) => {
         if (!mp[selectedConnection._id]) {
           mp[selectedConnection._id] = [];
         }
@@ -131,7 +128,6 @@ export default function ChatBox() {
         newMsg,
       ],
     }));
-    console.log("chat---", chats);
     setNewMessage("");
   };
 
@@ -365,9 +361,9 @@ export default function ChatBox() {
                 <div className="flex flex-col h-[calc(480px-48px)]">
                   <div className="flex-1 overflow-y-auto p-4 space-y-3">
                     {chats[selectedConnection._id]?.length > 0 ? (
-                      chats[selectedConnection._id].map((message) => (
+                      chats[selectedConnection._id].map((message, index) => (
                         <div
-                          key={message._id}
+                          key={index}
                           className={`flex ${
                             message.sender === user._id
                               ? "justify-end"

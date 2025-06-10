@@ -3,7 +3,7 @@
 import type React from "react";
 
 import { useState } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { login } from "../../features/auth/authSlice";
 import { useAppDispatch } from "@/hooks/hooks";
 import { getUser } from "@/features/user/userSlice";
@@ -17,9 +17,8 @@ import {
 } from "@/utils/webstorage.utls";
 
 export default function LoginForm() {
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { error, loading } = useSelector((state: any) => state.auth);
+  const { loading } = useSelector((state: any) => state.auth);
 
   const [formData, setFormData] = useState({
     email: "",

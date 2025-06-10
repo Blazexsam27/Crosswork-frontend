@@ -1,5 +1,5 @@
 import type { Participant } from "@/types/videoroom/videoRoomTypes";
-import { Hand, MicOff, Monitor, MoreVertical } from "lucide-react";
+import { MicOff, Monitor, MoreVertical } from "lucide-react";
 
 export default function ParticipantVideo({
   participant,

@@ -1,11 +1,9 @@
 import { setInLocalStorage } from "@/utils/webstorage.utls";
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/hooks/hooks";
 import { getUser } from "@/features/user/userSlice";
 
 function OAuthHandler() {
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   useEffect(() => {

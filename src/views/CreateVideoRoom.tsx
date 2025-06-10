@@ -25,9 +25,9 @@ interface RoomSettings {
 
 export default function CreateRoom() {
   const navigate = useNavigate();
-  const [isCreating, setIsCreating] = useState(false);
+  const [isCreating] = useState(false);
   const [roomCreated, setRoomCreated] = useState(false);
-  const [generatedRoomId, setGeneratedRoomId] = useState("");
+  const [generatedRoomId] = useState("");
   const [linkCopied, setLinkCopied] = useState(false);
   const [settings, setSettings] = useState<RoomSettings>({
     name: "",

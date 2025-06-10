@@ -11,6 +11,7 @@ export interface Message {
   sender: string;
   receiver: string;
   content: string;
+  createdAt?: string;
 }
 
 export type MessageFromDb = {
