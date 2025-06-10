@@ -2,7 +2,7 @@ import axios from "axios";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
 
 const api = axios.create({
-  baseURL: "/api",
+  baseURL: import.meta.env.VITE_PUBLIC_BACKEND_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -22,7 +22,7 @@ api.interceptors.request.use(
 // function to create a customized instance with additional header configs
 export const apiWithHeaders = (headers: Record<string, string>) => {
   return axios.create({
-    baseURL: "/api",
+    baseURL: import.meta.env.VITE_PUBLIC_BACKEND_URL,
     headers: {
       ...api.defaults.headers,
       ...headers,
