@@ -6,11 +6,14 @@ import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { signup } from "../../features/auth/authSlice";
 import { useAppDispatch } from "../../hooks/hooks";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function SignupForm() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -144,7 +147,7 @@ export default function SignupForm() {
             <p className="mt-1 text-sm text-red-500">{errors.email}</p>
           )}
         </div>
-        <div>
+        <div className="relative">
           <label
             htmlFor="password"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -154,7 +157,7 @@ export default function SignupForm() {
           <input
             id="password"
             name="password"
-            type="password"
+            type={`${showPassword ? "text" : "password"}`}
             value={formData.password}
             onChange={handleChange}
             className={`w-full px-4 py-3 rounded-sm border ${
@@ -162,11 +165,22 @@ export default function SignupForm() {
             } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200`}
             placeholder="Create a password"
           />
+          {showPassword ? (
+            <Eye
+              className="absolute top-9 right-2"
+              onClick={() => setShowPassword(!showPassword)}
+            />
+          ) : (
+            <EyeOff
+              className="absolute top-9 right-2"
+              onClick={() => setShowPassword(!showPassword)}
+            />
+          )}
           {errors.password && (
             <p className="mt-1 text-sm text-red-500">{errors.password}</p>
           )}
         </div>
-        <div>
+        <div className="relative">
           <label
             htmlFor="confirmPassword"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -176,7 +190,7 @@ export default function SignupForm() {
           <input
             id="confirmPassword"
             name="confirmPassword"
-            type="password"
+            type={`${!showConfirmPassword ? "text" : "password"}`}
             value={formData.confirmPassword}
             onChange={handleChange}
             className={`w-full px-4 py-3 rounded-sm border ${
@@ -184,6 +198,17 @@ export default function SignupForm() {
             } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200`}
             placeholder="Confirm your password"
           />
+          {!showConfirmPassword ? (
+            <Eye
+              className="absolute top-9 right-2"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            />
+          ) : (
+            <EyeOff
+              className="absolute top-9 right-2"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            />
+          )}
           {errors.confirmPassword && (
             <p className="mt-1 text-sm text-red-500">
               {errors.confirmPassword}

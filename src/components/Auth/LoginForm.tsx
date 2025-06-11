@@ -9,7 +9,7 @@ import { useAppDispatch } from "@/hooks/hooks";
 import { getUser } from "@/features/user/userSlice";
 import { useSelector } from "react-redux";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { X } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 import recommendService from "@/services/recommend.service";
 import {
   getFromLocalStorage,
@@ -19,6 +19,8 @@ import {
 export default function LoginForm() {
   const dispatch = useAppDispatch();
   const { loading } = useSelector((state: any) => state.auth);
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -135,7 +137,7 @@ export default function LoginForm() {
           )}
         </div>
 
-        <div>
+        <div className="relative">
           <div className="flex items-center justify-between mb-1">
             <label
               htmlFor="password"
@@ -153,7 +155,7 @@ export default function LoginForm() {
           <input
             id="password"
             name="password"
-            type="password"
+            type={`${showPassword ? "text" : "password"}`}
             value={formData.password}
             onChange={handleChange}
             className={`w-full px-4 py-3 rounded-sm border ${
@@ -161,6 +163,17 @@ export default function LoginForm() {
             } focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200`}
             placeholder="Enter your password"
           />
+          {showPassword ? (
+            <Eye
+              className="absolute top-9 right-2"
+              onClick={() => setShowPassword(!showPassword)}
+            />
+          ) : (
+            <EyeOff
+              className="absolute top-9 right-2"
+              onClick={() => setShowPassword(!showPassword)}
+            />
+          )}
           {errors.password && (
             <p className="mt-1 text-sm text-red-500">{errors.password}</p>
           )}

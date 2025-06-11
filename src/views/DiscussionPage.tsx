@@ -20,6 +20,7 @@ import { formatTimeAgo } from "../utils/time.utils";
 import CommentComponent from "@/components/DiscussionPage/CommentComponent";
 import forumUtils from "@/utils/forum.utils";
 import _ from "lodash";
+import Loader from "@/components/widgets/Loader";
 
 export default function DiscussionPage() {
   const threadId = window.location.pathname.split("/")[2];
@@ -168,7 +169,7 @@ export default function DiscussionPage() {
 
   const displayedComments = showAllComments ? comments : comments.slice(0, 3);
 
-  if (!thread) return <div>Loading...</div>;
+  if (!thread) return <Loader />;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8">

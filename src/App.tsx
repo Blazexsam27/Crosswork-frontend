@@ -10,6 +10,9 @@ import ChatBox from "./components/widgets/ChatBox";
 import ProtectedRoute from "./ProtectedRoutes";
 import { useEffect, useState, lazy, Suspense } from "react";
 import { getFromLocalStorage } from "./utils/webstorage.utls";
+import Loader from "./components/widgets/Loader";
+import ForgotPass from "./components/Auth/ForgotPass";
+import ResetPassword from "./components/Auth/ResetPassword";
 
 // Dynamically imported components
 const Home = lazy(() => import("./views/Home"));
@@ -39,11 +42,13 @@ function App() {
       <BrowserRouter>
         <Navbar />
         {isAuthenticated && <ChatBox />}
-        <Suspense fallback={<div>Loading...</div>}>
+        <Suspense fallback={<Loader />}>
           <Routes>
             <Route path="/" element={<Home />}></Route>
             <Route path="/login" element={<LoginForm />}></Route>
             <Route path="/signup" element={<SignupForm />}></Route>
+            <Route path="/forgot-password" element={<ForgotPass />}></Route>
+            <Route path="/reset-password/*" element={<ResetPassword />}></Route>
             <Route path="/oauth-success" element={<OAuthHandler />}></Route>
             <Route path="/oauth-error" element={<SignupForm />}></Route>
             <Route path="/about" element={<About />} />
