@@ -288,17 +288,21 @@ export default function ConnectionsPage() {
               Suggested for You
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {suggestedStudents.map((student: Student) => (
-                <StudentCard
-                  key={student._id}
-                  student={student}
-                  onConnect={handleConnect}
-                  onCancelRequest={handleCancelRequest}
-                  onViewProfile={setSelectedStudent}
-                  isCompact={true}
-                  connectionStates={connectionStates}
-                />
-              ))}
+              {suggestedStudents.map((student: Student) => {
+                if (user._id !== student._id) {
+                  return (
+                    <StudentCard
+                      key={student._id}
+                      student={student}
+                      onConnect={handleConnect}
+                      onCancelRequest={handleCancelRequest}
+                      onViewProfile={setSelectedStudent}
+                      isCompact={true}
+                      connectionStates={connectionStates}
+                    />
+                  );
+                }
+              })}
             </div>
           </div>
         )}
@@ -310,16 +314,20 @@ export default function ConnectionsPage() {
           </h2>
           {filteredStudents.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredStudents.map((student) => (
-                <StudentCard
-                  key={student._id}
-                  student={student}
-                  onConnect={handleConnect}
-                  onCancelRequest={handleCancelRequest}
-                  onViewProfile={setSelectedStudent}
-                  connectionStates={connectionStates}
-                />
-              ))}
+              {filteredStudents.map((student) => {
+                if (user._id !== student._id) {
+                  return (
+                    <StudentCard
+                      key={student._id}
+                      student={student}
+                      onConnect={handleConnect}
+                      onCancelRequest={handleCancelRequest}
+                      onViewProfile={setSelectedStudent}
+                      connectionStates={connectionStates}
+                    />
+                  );
+                }
+              })}
             </div>
           ) : (
             <div className="text-center py-12">

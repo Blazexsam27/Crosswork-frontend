@@ -8,6 +8,7 @@ import {
   Heart,
   Share,
   Bookmark,
+  User,
 } from "lucide-react";
 import type { Comment, VoteType } from "@/types/forums/forumTypes";
 import { useAppDispatch, useAppSelector } from "@/hooks/hooks";
@@ -284,11 +285,7 @@ export default function DiscussionPage() {
           {/* Add Comment Form */}
           <form onSubmit={handleAddComment} className="mb-8">
             <div className="flex space-x-3">
-              <img
-                src="/placeholder.svg?height=40&width=40"
-                alt="Your avatar"
-                className="w-10 h-10 rounded-full object-cover flex-shrink-0"
-              />
+              <User className="w-10 h-10 rounded-full" />
               <div className="flex-1">
                 <textarea
                   value={newComment}

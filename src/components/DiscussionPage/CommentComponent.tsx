@@ -1,7 +1,7 @@
 import type { Comment } from "@/types/forums/forumTypes";
 import { formatTimeAgo } from "@/utils/time.utils";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
-import { ArrowDown, ArrowUp, Heart } from "lucide-react";
+import { ArrowDown, ArrowUp, Heart, User } from "lucide-react";
 
 export default function CommentComponent({
   comment,
@@ -32,11 +32,12 @@ export default function CommentComponent({
     <div className={`${isReply ? "ml-8 border-l-2 border-gray-100 pl-4" : ""}`}>
       <div className="flex space-x-3">
         <div className="flex-shrink-0">
-          <img
+          {/* <img
             src={comment.author.avatar || "/placeholder.svg"}
             alt={comment.author.name}
             className="w-8 h-8 rounded-full object-cover"
-          />
+          /> */}
+          <User className="w-10 h-10 rounded-full" />
         </div>
 
         <div className="flex-1 min-w-0">
