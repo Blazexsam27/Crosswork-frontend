@@ -45,6 +45,16 @@ class ThreadService {
     }
   }
 
+  async getAllCategories() {
+    try {
+      const response = await axios.get(`${this.endpoint}/categories/list`);
+
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+
   async getThreadsByCategoryAndUser(category: string, userId: string) {
     try {
       const response = await axios.post(`${this.endpoint}/category-and-user`, {

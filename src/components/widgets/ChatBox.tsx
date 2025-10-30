@@ -8,6 +8,7 @@ import {
   Search,
   ChevronUp,
   ChevronDown,
+  Smile,
 } from "lucide-react";
 import type { Message, MessageFromDb } from "@/types/chatbox/chatBoxTypes";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
@@ -259,11 +260,12 @@ function ChatBox({ user }: { user: UserType }) {
                   <ChevronDown className="w-4 h-4" />
                 </button>
                 <div className="relative">
-                  <img
+                  {/* <img
                     src={selectedConnection.profilePic || "/placeholder.svg"}
                     alt={selectedConnection.name}
                     className="w-8 h-8 rounded-full object-cover"
-                  />
+                  /> */}
+                  <Smile className="w-8 h-8 rounded-full bg-white/20 p-1" />
                   {/* <span
                     className={`absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-white ${
                       selectedConnection.status === "online"

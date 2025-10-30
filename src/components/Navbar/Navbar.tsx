@@ -111,14 +111,14 @@ function Navbar() {
                         <User className="w-4 h-4 mr-3" />
                         Profile
                       </NavLink>
-                      <NavLink
+                      {/* <NavLink
                         to="/rooms"
                         onClick={closeDropdown}
                         className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         <HomeIcon className="w-4 h-4 mr-3" />
                         Rooms
-                      </NavLink>
+                      </NavLink> */}
                       <NavLink
                         to="/Invites"
                         onClick={closeDropdown}
@@ -215,13 +215,13 @@ function Navbar() {
                   >
                     Invites ({user.pendingRequests.length})
                   </NavLink>
-                  <NavLink
+                  {/* <NavLink
                     to="/rooms"
                     className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium transition-colors"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Rooms
-                  </NavLink>
+                  </NavLink> */}
                   <button
                     onClick={() => {
                       handleLogout();

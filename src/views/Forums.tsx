@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect } from "react";
 import { Search, Plus, MessageCircle, ArrowUp, ArrowDown } from "lucide-react";
 import type {
@@ -20,6 +18,7 @@ export default function ForumPage() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [threads, setThreads] = useState<ThreadRetrieveType[]>([]);
+  const [threadCategories, setThreadsCategories] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState<"hot" | "new" | "top">("hot");
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
@@ -95,8 +94,19 @@ export default function ForumPage() {
     }
   }
 
+  async function getAllCategories() {
+    try {
+      const response = await threadService.getAllCategories();
+      console.log("Cats", response);
+      setThreadsCategories(response);
+    } catch (error) {
+      console.error("Error while getting threads", error);
+    }
+  }
+
   useEffect(() => {
     getAllThreads();
+    getAllCategories();
   }, []);
 
   function handleThreadClick(thread: ThreadRetrieveType): void {
@@ -135,7 +145,7 @@ export default function ForumPage() {
                 placeholder="Search discussions..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border bg-white border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <div className="flex gap-2">
@@ -172,20 +182,21 @@ export default function ForumPage() {
                 >
                   All Subjects
                 </button>
-                {subjects.map((subject) => (
+                {threadCategories.map((subject) => (
                   <button
-                    key={subject.name}
-                    onClick={() => setSelectedSubject(subject.name)}
+                    key={subject}
+                    onClick={() => {
+                      setSelectedSubject(subject);
+                      console.log(subject);
+                    }}
                     className={`w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center justify-between ${
-                      selectedSubject === subject.name
-                        ? subject.color
+                      selectedSubject === subject
+                        ? "bg-blue-100 text-blue-800"
                         : "hover:bg-gray-100"
                     }`}
                   >
-                    <span>{subject.name}</span>
-                    <span className="text-sm text-gray-500">
-                      {subject.count}
-                    </span>
+                    <span>{subject}</span>
+                    <span className="text-sm text-gray-500">1</span>
                   </button>
                 ))}
               </div>

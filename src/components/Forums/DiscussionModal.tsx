@@ -74,7 +74,7 @@ function DiscussionModal({ onClose, onSubmit }: CreateDiscussionModalProps) {
               <select
                 value={subject}
                 onChange={(e) => setSubject(e.target.value)}
-                className="w-full px-2 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               >
                 <option value="">Select a subject</option>

@@ -5,4 +5,5 @@ export const subjects = [
   { name: "Chemistry", count: 45, color: "bg-yellow-100 text-yellow-800" },
   { name: "Biology", count: 34, color: "bg-pink-100 text-pink-800" },
   { name: "Engineering", count: 78, color: "bg-indigo-100 text-indigo-800" },
+  { name: "Miscellaneous", count: 78, color: "bg-indigo-100 text-indigo-800" },
 ];
