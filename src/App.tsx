@@ -13,6 +13,7 @@ import { getFromLocalStorage } from "./utils/webstorage.utls";
 import Loader from "./components/widgets/Loader";
 import ForgotPass from "./components/Auth/ForgotPass";
 import ResetPassword from "./components/Auth/ResetPassword";
+import MainFeed from "./views/MainFeed";
 
 // Dynamically imported components
 const Home = lazy(() => import("./views/Home"));
@@ -44,7 +45,10 @@ function App() {
         {isAuthenticated && <ChatBox />}
         <Suspense fallback={<Loader />}>
           <Routes>
-            <Route path="/" element={<Home />}></Route>
+            <Route
+              path="/"
+              element={isAuthenticated ? <MainFeed /> : <Home />}
+            ></Route>
             <Route path="/login" element={<LoginForm />}></Route>
             <Route path="/signup" element={<SignupForm />}></Route>
             <Route path="/forgot-password" element={<ForgotPass />}></Route>
