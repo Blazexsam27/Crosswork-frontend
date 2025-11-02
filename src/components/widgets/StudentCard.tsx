@@ -1,3 +1,5 @@
+"use client";
+
 import type { StudentCardProps } from "@/types/user/userTypes";
 import { Check, MessageCircle, Smile, UserPlus, X } from "lucide-react";
 
@@ -7,17 +9,16 @@ export default function StudentCard({
   onCancelRequest,
   onViewProfile,
   isCompact = false,
-  connectionStates,
+  connectionStatus,
 }: StudentCardProps) {
-  const connectionStatus = connectionStates[student._id] || "none";
-
+  console.log(connectionStatus);
   const getConnectionButton = () => {
     switch (connectionStatus) {
       case "none":
         return (
           <button
             onClick={() => onConnect(student._id)}
-            className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-all duration-200 font-medium text-sm shadow-sm hover:shadow"
           >
             <UserPlus className="w-4 h-4" />
             <span>Connect</span>
@@ -27,7 +28,7 @@ export default function StudentCard({
         return (
           <button
             onClick={() => onCancelRequest(student._id)}
-            className="flex items-center space-x-2 px-4 py-2 bg-yellow-100 text-yellow-800 rounded-lg hover:bg-yellow-200 transition-colors"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-all duration-200 font-medium text-sm"
           >
             <X className="w-4 h-4" />
             <span>Pending</span>
@@ -35,7 +36,7 @@ export default function StudentCard({
         );
       case "connected":
         return (
-          <button className="flex items-center space-x-2 px-4 py-2 bg-green-100 text-green-800 rounded-lg">
+          <button className="flex items-center justify-center gap-2 px-4 py-2.5 bg-accent text-accent-foreground rounded-lg font-medium text-sm cursor-default">
             <Check className="w-4 h-4" />
             <span>Connected</span>
           </button>
@@ -44,57 +45,71 @@ export default function StudentCard({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-shadow duration-200 p-6">
-      <div className="flex items-start space-x-4">
-        <div className="relative">
-          <Smile className="w-16 h-16 rounded-full object-cover" />
+    <div className="group bg-card text-card-foreground rounded-xl border border-border shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden flex flex-col h-full">
+      <div className="h-1 bg-gradient-to-r from-primary/60 via-primary to-primary/60 flex-shrink-0" />
+
+      <div className="p-6 flex-1 grid grid-rows-[auto_auto_1fr_auto] gap-4">
+        {/* Row 1: Header with avatar and name - Fixed height */}
+        <div className="flex items-start gap-4">
+          <div className="relative flex-shrink-0">
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center ring-2 ring-border group-hover:ring-primary/30 transition-all duration-300">
+              <Smile className="w-8 h-8 text-muted-foreground" />
+            </div>
+          </div>
+
+          <div className="flex-1 min-w-0">
+            <h3 className="text-xl font-semibold text-foreground truncate mb-1 group-hover:text-primary transition-colors">
+              {student.name}
+            </h3>
+            <p className="text-sm text-muted-foreground font-medium">
+              {student.subjects.slice(0, 2).join(" • ")}
+            </p>
+          </div>
         </div>
 
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-semibold text-gray-900 truncate">
-            {student.name}
-          </h3>
-          <p className="text-sm text-gray-600">
-            {student.subjects.slice(0, 2).join(" • ")}
-          </p>
+        {/* Row 2: Bio - Fixed height with line-clamp */}
+        {!isCompact && (
+          <div className="min-h-[2.5rem]">
+            <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
+              {student.bio}
+            </p>
+          </div>
+        )}
+
+        {/* Row 3: Interests - Flexible space that expands */}
+        <div className="flex items-start">
+          <div className="flex flex-wrap gap-2">
+            {student.interests.slice(0, isCompact ? 2 : 3).map((interest) => (
+              <span
+                key={interest}
+                className="inline-flex items-center px-3 py-1.5 bg-secondary/80 text-secondary-foreground rounded-full text-xs font-medium hover:bg-secondary transition-colors"
+              >
+                {interest}
+              </span>
+            ))}
+            {student.interests.length > (isCompact ? 2 : 3) && (
+              <span className="inline-flex items-center px-3 py-1.5 bg-muted text-muted-foreground rounded-full text-xs font-medium">
+                +{student.interests.length - (isCompact ? 2 : 3)} more
+              </span>
+            )}
+          </div>
         </div>
-      </div>
 
-      {!isCompact && (
-        <p className="text-gray-600 mt-4 text-sm line-clamp-2">{student.bio}</p>
-      )}
-
-      <div className="mt-4">
-        <div className="flex flex-wrap gap-1">
-          {student.interests.slice(0, isCompact ? 2 : 3).map((interest) => (
-            <span
-              key={interest}
-              className="inline-block px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
-            >
-              {interest}
-            </span>
-          ))}
-          {student.interests.length > (isCompact ? 2 : 3) && (
-            <span className="inline-block px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">
-              +{student.interests.length - (isCompact ? 2 : 3)} more
-            </span>
+        {/* Row 4: Action buttons - Fixed at bottom */}
+        <div className="flex items-center gap-2 pt-4 border-t border-border">
+          {getConnectionButton()}
+          <button
+            onClick={() => onViewProfile(student)}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border border-border text-foreground rounded-lg hover:bg-accent hover:text-accent-foreground hover:border-accent transition-all duration-200 font-medium text-sm"
+          >
+            <span>View Profile</span>
+          </button>
+          {connectionStatus === "connected" && (
+            <button className="flex items-center justify-center p-2.5 border border-border text-foreground rounded-lg hover:bg-accent hover:text-accent-foreground hover:border-accent transition-all duration-200">
+              <MessageCircle className="w-4 h-4" />
+            </button>
           )}
         </div>
-      </div>
-
-      <div className="flex items-center space-x-2 mt-4">
-        {getConnectionButton()}
-        <button
-          onClick={() => onViewProfile(student)}
-          className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          <span>View Profile</span>
-        </button>
-        {connectionStatus === "connected" && (
-          <button className="flex items-center space-x-2 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-            <MessageCircle className="w-4 h-4" />
-          </button>
-        )}
       </div>
     </div>
   );

@@ -25,10 +25,28 @@ export interface Student {
 }
 
 export interface StudentCardProps {
-  student: Student;
+  student: StudentResponse;
   onConnect: (id: string) => void;
   onCancelRequest: (id: string) => void;
-  onViewProfile: (student: Student) => void;
+  onViewProfile: (student: StudentResponse) => void;
   isCompact?: boolean;
-  connectionStates: Record<string, "none" | "pending" | "connected">;
+  connectionStatus: string;
+}
+
+// server response types
+
+export interface StudentResponse {
+  _id: string;
+  name: string;
+  email: string;
+  profilePic: string;
+  interests: string[];
+  subjects: string[];
+  languages: string[];
+  bio: string;
+  availability: string[];
+  connections: string[];
+  pendingRequests: string[];
+  university: string;
+  sentRequests: string[];
 }

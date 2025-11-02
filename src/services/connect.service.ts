@@ -30,6 +30,17 @@ class ConnectService {
     }
   };
 
+  cancelRequest = async (targetUserId: string, senderId: string) => {
+    try {
+      const response = await axios.post(
+        `${this.endpoint}/cancel?targetId=${targetUserId}&senderId=${senderId}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Error while cancel:", error);
+    }
+  };
+
   declineRequest = async (targetUserId: string, senderId: string) => {
     try {
       const response = await axios.post(

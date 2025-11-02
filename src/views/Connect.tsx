@@ -9,17 +9,20 @@ import connectService from "@/services/connect.service";
 import { ToastContainer, toast } from "react-toastify";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
 import StudentCard from "@/components/widgets/StudentCard";
-import type { Student } from "@/types/user/userTypes";
+import type { Student, StudentResponse } from "@/types/user/userTypes";
 import StudentProfileModal from "@/components/Connect/StudentProfileModal";
 
 export default function ConnectionsPage() {
-  const [students, setStudents] = useState<Student[]>([]);
+  const [students, setStudents] = useState<StudentResponse[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [selectedSubjects, setSelectedSubjects] = useState<string[]>([]);
-  const [suggestedStudents, setSuggestedStudents] = useState<Student[]>([]);
+  const [suggestedStudents, setSuggestedStudents] = useState<StudentResponse[]>(
+    []
+  );
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [selectedStudent, setSelectedStudent] =
+    useState<StudentResponse | null>(null);
   const [connectionStates, setConnectionStates] = useState<
     Record<string, "none" | "pending" | "connected">
   >({});
@@ -39,7 +42,15 @@ export default function ConnectionsPage() {
     }
   };
 
-  const handleCancelRequest = (studentId: string) => {
+  const handleCancelRequest = async (studentId: string) => {
+    // api request to cancel the connection request
+
+    try {
+      const response = await connectService.cancelRequest(studentId, user._id);
+      console.log("Response", response);
+    } catch (error) {
+      console.error("Error while cancel", error);
+    }
     setConnectionStates((prev) => ({
       ...prev,
       [studentId]: "none",
@@ -92,6 +103,22 @@ export default function ConnectionsPage() {
     return matchesSearch && matchesInterests;
   });
 
+  const getConnectionStatus = (student: StudentResponse) => {
+    if (
+      student.pendingRequests.length &&
+      student.pendingRequests?.includes(user._id)
+    ) {
+      return "pending";
+    } else if (
+      student.connections.length &&
+      student.connections?.includes(user._id)
+    ) {
+      return "connected";
+    }
+
+    return "none";
+  };
+
   const getAllUsers = async () => {
     try {
       const response = await userService.getAllUsers();
@@ -104,16 +131,16 @@ export default function ConnectionsPage() {
         const top3 = recommendations
           .slice(0, 3)
           .map((student: any) => student.id);
-        let temp: Student[] = [];
-        response.map((student: Student) => {
+        const temp: StudentResponse[] = [];
+        response.map((student: StudentResponse) => {
           if (top3.includes(student._id)) temp.push(student);
         });
         setSuggestedStudents(temp);
       }
 
       // update the connection status
-      let connections: Record<string, "connected" | "pending" | "none"> = {};
-      response.map((student: Student) => {
+      const connections: Record<string, "connected" | "pending" | "none"> = {};
+      response.map((student: StudentResponse) => {
         if (user.connections.includes(student._id)) {
           connections[student._id] = "connected";
         }
@@ -130,22 +157,22 @@ export default function ConnectionsPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ToastContainer />
         {/* Header */}
         <div className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-foreground">
                 Find Study Partners
               </h1>
-              <p className="text-gray-600 mt-1">
+              <p className="text-muted-foreground mt-1">
                 Connect with students who share your interests and subjects
               </p>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600">
+              <span className="text-sm text-muted-foreground">
                 {filteredStudents.length} students found
               </span>
             </div>
@@ -155,18 +182,18 @@ export default function ConnectionsPage() {
           <div className="mt-6 space-y-4">
             <div className="flex flex-col lg:flex-row gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search by name, subjects, or interests..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="bg-white w-full pl-10 pr-4 py-3 border border-gray-300 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="bg-card text-foreground w-full pl-10 pr-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 />
               </div>
               <button
                 onClick={() => setShowFilters(!showFilters)}
-                className="bg-slate-700 text-slate-50 flex items-center space-x-2 px-6 py-3 border border-gray-300 rounded-sm hover:bg-gray-600 transition-colors"
+                className="bg-primary text-primary-foreground flex items-center space-x-2 px-6 py-2 rounded-lg hover:bg-primary/90 transition-colors"
               >
                 <Filter className="w-5 h-5" />
                 <span>Filters</span>
@@ -175,10 +202,10 @@ export default function ConnectionsPage() {
 
             {/* Filter Panel */}
             {showFilters && (
-              <div className="bg-white rounded-sm border border-gray-200 p-6">
+              <div className="bg-card rounded-lg border border-border p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Interests
                     </label>
                     <div className="space-y-2 max-h-32 overflow-y-auto">
@@ -188,9 +215,9 @@ export default function ConnectionsPage() {
                             type="checkbox"
                             checked={selectedInterests.includes(interest)}
                             onChange={() => toggleInterest(interest)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            className="rounded border-border text-primary focus:ring-ring"
                           />
-                          <span className="ml-2 text-sm text-gray-700">
+                          <span className="ml-2 text-sm text-foreground">
                             {interest}
                           </span>
                         </label>
@@ -199,7 +226,7 @@ export default function ConnectionsPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Quick Filters
                     </label>
                     <div className="space-y-2">
@@ -210,7 +237,7 @@ export default function ConnectionsPage() {
                             "AI Research",
                           ])
                         }
-                        className="block w-full text-left px-3 py-2 text-sm bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors"
+                        className="block w-full text-left px-3 py-2 text-sm bg-secondary text-secondary-foreground rounded-lg hover:bg-secondary/80 transition-colors"
                       >
                         AI & Machine Learning
                       </button>
@@ -218,19 +245,19 @@ export default function ConnectionsPage() {
                         onClick={() =>
                           setSelectedInterests(["Web Development"])
                         }
-                        className="block w-full text-left px-3 py-2 text-sm bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors"
+                        className="block w-full text-left px-3 py-2 text-sm bg-accent text-accent-foreground rounded-lg hover:bg-accent/80 transition-colors"
                       >
                         Web Development
                       </button>
                       <button
                         onClick={() => setSelectedInterests(["Research"])}
-                        className="block w-full text-left px-3 py-2 text-sm bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors"
+                        className="block w-full text-left px-3 py-2 text-sm bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors"
                       >
                         Research
                       </button>
                       <button
                         onClick={() => setSelectedInterests([])}
-                        className="block w-full text-left px-3 py-2 text-sm bg-gray-50 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="block w-full text-left px-3 py-2 text-sm bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition-colors"
                       >
                         Clear Filters
                       </button>
@@ -240,14 +267,17 @@ export default function ConnectionsPage() {
 
                 <div className="mt-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-foreground mb-2">
                       Subjects
                     </label>
                     <div className="flex flex-wrap gap-2 my-2">
                       {selectedSubjects.length > 0 &&
                         selectedSubjects.map((subject) => {
                           return (
-                            <div className="w-max px-2 py-1 bg-blue-50 text-blue-700 rounded-lg flex items-center gap-1">
+                            <div
+                              key={subject}
+                              className="w-max px-2 py-1 bg-secondary text-secondary-foreground rounded-lg flex items-center gap-1"
+                            >
                               <span>{subject}</span>
 
                               <X
@@ -266,9 +296,9 @@ export default function ConnectionsPage() {
                             type="checkbox"
                             checked={selectedSubjects.includes(subject)}
                             onChange={() => toggleSubject(subject)}
-                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                            className="rounded border-border text-primary focus:ring-ring"
                           />
-                          <span className="ml-2 text-sm text-gray-700">
+                          <span className="ml-2 text-sm text-foreground">
                             {subject}
                           </span>
                         </label>
@@ -281,14 +311,14 @@ export default function ConnectionsPage() {
           </div>
         </div>
 
-        {/* Suggested Connections */}
-        {suggestedStudents.length > 0 && (
+        {/* Suggested Connections  -- USED WHEN PYTHON MODEL IS IMPLEMENTED*/}
+        {/* {suggestedStudents.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <h2 className="text-xl font-semibold text-foreground mb-4">
               Suggested for You
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {suggestedStudents.map((student: Student) => {
+              {suggestedStudents.map((student: StudentResponse) => {
                 if (user._id !== student._id) {
                   return (
                     <StudentCard
@@ -298,18 +328,18 @@ export default function ConnectionsPage() {
                       onCancelRequest={handleCancelRequest}
                       onViewProfile={setSelectedStudent}
                       isCompact={true}
-                      connectionStates={connectionStates}
+                      connectionStatus={getConnectionStatus(student)}
                     />
                   );
                 }
               })}
             </div>
           </div>
-        )}
+        )} */}
 
         {/* All Students */}
         <div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">
+          <h2 className="text-xl font-semibold text-foreground mb-6">
             All Students
           </h2>
           {filteredStudents.length > 0 ? (
@@ -323,7 +353,7 @@ export default function ConnectionsPage() {
                       onConnect={handleConnect}
                       onCancelRequest={handleCancelRequest}
                       onViewProfile={setSelectedStudent}
-                      connectionStates={connectionStates}
+                      connectionStatus={getConnectionStatus(student)}
                     />
                   );
                 }
@@ -331,11 +361,11 @@ export default function ConnectionsPage() {
             </div>
           ) : (
             <div className="text-center py-12">
-              <Users className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              <Users className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 No students found
               </h3>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Try adjusting your search criteria or filters
               </p>
             </div>
@@ -350,7 +380,7 @@ export default function ConnectionsPage() {
           onClose={() => setSelectedStudent(null)}
           onConnect={handleConnect}
           onCancelRequest={handleCancelRequest}
-          connectionStatus={connectionStates}
+          connectionStatus={getConnectionStatus(selectedStudent)}
           handleDisconnect={handleDisconnect}
         />
       )}

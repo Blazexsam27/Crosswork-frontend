@@ -5,6 +5,6 @@ export interface StudentProfileModalProps {
   onClose: () => void;
   onConnect: (id: string) => void;
   onCancelRequest: (id: string) => void;
-  connectionStatus: Record<string, "none" | "pending" | "connected">;
+  connectionStatus: string;
   handleDisconnect: (id: string) => Promise<void>;
 }
