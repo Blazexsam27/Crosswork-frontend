@@ -68,12 +68,12 @@ function Navbar() {
               >
                 Room
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 to="/forums"
                 className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
               >
                 Forum
-              </NavLink>
+              </NavLink> */}
               <NavLink
                 to="/about"
                 className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors duration-200"
@@ -167,13 +167,13 @@ function Navbar() {
               >
                 Home
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 to="/forums"
                 className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium transition-colors"
                 onClick={() => setIsMenuOpen(false)}
               >
                 Forum
-              </NavLink>
+              </NavLink> */}
               <NavLink
                 to="/about"
                 className="text-gray-700 hover:text-blue-600 block px-3 py-2 text-base font-medium transition-colors"

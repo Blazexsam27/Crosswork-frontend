@@ -1,7 +1,39 @@
 import { Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import CustomDock from "../widgets/CustomDock";
 
 export function Header() {
+  const items = [
+    {
+      label: "About",
+      bgColor: "#0D0716",
+      textColor: "#fff",
+      links: [
+        { label: "Company", ariaLabel: "About Company" },
+        { label: "Careers", ariaLabel: "About Careers" },
+      ],
+    },
+    {
+      label: "Projects",
+      bgColor: "#170D27",
+      textColor: "#fff",
+      links: [
+        { label: "Featured", ariaLabel: "Featured Projects" },
+        { label: "Case Studies", ariaLabel: "Project Case Studies" },
+      ],
+    },
+    {
+      label: "Contact",
+      bgColor: "#271E37",
+      textColor: "#fff",
+      links: [
+        { label: "Email", ariaLabel: "Email us" },
+        { label: "Twitter", ariaLabel: "Twitter" },
+        { label: "LinkedIn", ariaLabel: "LinkedIn" },
+      ],
+    },
+  ];
+
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
@@ -13,10 +45,10 @@ export function Header() {
 
           <div className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg">
-              SN
+              FN
             </div>
             <span className="hidden font-bold text-foreground sm:inline-block">
-              StudentNet
+              FeedNet
             </span>
           </div>
 
@@ -33,7 +65,9 @@ export function Header() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2"></div>
+        <div className="flex items-center gap-2">
+          <CustomDock />
+        </div>
       </div>
     </header>
   );

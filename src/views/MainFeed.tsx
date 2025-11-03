@@ -2,6 +2,7 @@ import { Header } from "@/components/MainFeed/Header";
 import { Sidebar } from "@/components/MainFeed/Sidebar";
 import { FeedCard } from "@/components/MainFeed/FeedCard";
 import { TrendingCommunities } from "@/components/MainFeed/TrendingCommunities";
+import TrendingPostMarquee from "@/components/MainFeed/TrendingPostMarquee";
 
 // Sample data for posts
 const posts = [
@@ -87,15 +88,14 @@ export default function Home() {
 
           {/* Main Feed */}
           <main className="lg:col-span-6">
-            <div className="mb-4 flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-foreground">Your Feed</h1>
+            {/* <div className="mb-4 flex items-center justify-between">
               <select className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground">
                 <option>Hot</option>
                 <option>New</option>
                 <option>Top</option>
               </select>
-            </div>
-
+            </div> */}
+            <TrendingPostMarquee />
             <div className="space-y-4">
               {posts.map((post) => (
                 <FeedCard key={post.id} post={post} />

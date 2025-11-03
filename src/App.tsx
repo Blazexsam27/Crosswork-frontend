@@ -14,6 +14,7 @@ import Loader from "./components/widgets/Loader";
 import ForgotPass from "./components/Auth/ForgotPass";
 import ResetPassword from "./components/Auth/ResetPassword";
 import MainFeed from "./views/MainFeed";
+import CreateCommunity from "./views/CreateCommunity";
 
 // Dynamically imported components
 const Home = lazy(() => import("./views/Home"));
@@ -59,6 +60,7 @@ function App() {
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<Home />} />
               <Route path="/profile" element={<UserProfile />} />
+              <Route path="/create-community" element={<CreateCommunity />} />
 
               <Route path="/forums" element={<Forums />} />
               <Route path="/forums/:id" element={<DiscussionPage />} />
