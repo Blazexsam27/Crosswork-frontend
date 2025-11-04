@@ -46,10 +46,7 @@ function App() {
         {isAuthenticated && <ChatBox />}
         <Suspense fallback={<Loader />}>
           <Routes>
-            <Route
-              path="/"
-              element={isAuthenticated ? <MainFeed /> : <Home />}
-            ></Route>
+            <Route path="/" element={<MainFeed />}></Route>
             <Route path="/login" element={<LoginForm />}></Route>
             <Route path="/signup" element={<SignupForm />}></Route>
             <Route path="/forgot-password" element={<ForgotPass />}></Route>

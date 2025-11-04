@@ -9,6 +9,9 @@ import {
   AlertCircle,
   CheckCircle,
 } from "lucide-react";
+import { getFromLocalStorage } from "@/utils/webstorage.utls";
+import type { UserType } from "@/types/user/userTypes";
+import communityService from "@/services/community.service";
 
 export default function CreateCommunityPage() {
   const [communityName, setCommunityName] = useState("");
@@ -29,6 +32,7 @@ export default function CreateCommunityPage() {
   const [coverImage, setCoverImage] = useState(null);
   const [iconPreview, setIconPreview] = useState<string | null>(null);
   const [coverPreview, setCoverPreview] = useState(null);
+  const user: UserType = getFromLocalStorage("user");
   interface FormErrors {
     name?: string | null;
     description?: string | null;
@@ -75,8 +79,9 @@ export default function CreateCommunityPage() {
     if (name.length < 3) return "Community name must be at least 3 characters";
     if (name.length > 50)
       return "Community name must be less than 50 characters";
-    if (!/^[a-zA-Z0-9\s&-]+$/.test(name))
-      return "Community name can only contain letters, numbers, spaces, & and -";
+    if (/\s/.test(name)) return "Community name cannot contain spaces";
+    if (!/^[a-zA-Z0-9_&-]+$/.test(name))
+      return "Community name can only contain letters, numbers, _, & and -";
     return null;
   };
 
@@ -286,8 +291,12 @@ export default function CreateCommunityPage() {
       formData.append("communityName", communityName);
       formData.append("description", description);
       formData.append("category", category);
-      formData.append("privacyType", privacyType);
-      formData.append("isNSFW", isNSFW);
+      formData.append("type", privacyType);
+      formData.append("communityIcon", "Community Icon");
+      formData.append("communityCoverImage", "communityCoverImage");
+      formData.append("moderators", user._id);
+      formData.append("createdBy", user._id);
+      formData.append("isNsfw", String(isNSFW));
       formData.append("rules", JSON.stringify(rules));
       formData.append("tags", JSON.stringify(tags));
 
@@ -300,12 +309,8 @@ export default function CreateCommunityPage() {
       }
 
       // IMPLEMENT API ENDPOINT CALL:
-      // const response = await fetch('/api/communities', {
-      //   method: 'POST',
-      //   body: formData,
-      // });
-      // const data = await response.json();
-
+      const resp = await communityService.createCommunity(formData);
+      console.log("Respon", resp);
       setSubmitStatus({
         type: "success",
         message: "Community created successfully! Redirecting...",

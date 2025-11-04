@@ -1,8 +1,18 @@
 import { Search, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CustomDock from "../widgets/CustomDock";
+import { useEffect, useState } from "react";
+import { getFromLocalStorage } from "@/utils/webstorage.utls";
 
 export function Header() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = getFromLocalStorage("authToken");
+    if (token) {
+      setIsAuthenticated(true);
+    }
+  }, []);
   const items = [
     {
       label: "About",
@@ -35,7 +45,7 @@ export function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-card">
+    <header className="sticky top-[4rem] z-[9] border-b border-border bg-card">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
         {/* Logo and Search */}
         <div className="flex flex-1 items-center gap-4">
@@ -65,9 +75,11 @@ export function Header() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
-          <CustomDock />
-        </div>
+        {isAuthenticated && (
+          <div className="flex items-center gap-2">
+            <CustomDock />
+          </div>
+        )}
       </div>
     </header>
   );
