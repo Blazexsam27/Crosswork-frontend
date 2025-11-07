@@ -15,6 +15,7 @@ import ForgotPass from "./components/Auth/ForgotPass";
 import ResetPassword from "./components/Auth/ResetPassword";
 import MainFeed from "./views/MainFeed";
 import CreateCommunity from "./views/CreateCommunity";
+import CommunityPage from "./views/CommunityPage";
 
 // Dynamically imported components
 const Home = lazy(() => import("./views/Home"));
@@ -54,6 +55,7 @@ function App() {
             <Route path="/oauth-success" element={<OAuthHandler />}></Route>
             <Route path="/oauth-error" element={<SignupForm />}></Route>
             <Route path="/about" element={<About />} />
+            <Route path="/community-page/:id" element={<CommunityPage />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<Home />} />
               <Route path="/profile" element={<UserProfile />} />

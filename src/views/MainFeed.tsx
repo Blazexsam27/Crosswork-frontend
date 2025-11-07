@@ -3,6 +3,8 @@ import { Sidebar } from "@/components/MainFeed/Sidebar";
 import { FeedCard } from "@/components/MainFeed/FeedCard";
 import { TrendingCommunities } from "@/components/MainFeed/TrendingCommunities";
 import TrendingPostMarquee from "@/components/MainFeed/TrendingPostMarquee";
+import communityService from "@/services/community.service";
+import { useEffect, useState } from "react";
 
 // Sample data for posts
 const posts = [
@@ -75,6 +77,21 @@ const posts = [
 ];
 
 export default function Home() {
+  const [communities, setCommunities] = useState([]);
+
+  const getAllCommunities = async () => {
+    try {
+      const communities = await communityService.getAllCommunities();
+      setCommunities(communities);
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
+
+  useEffect(() => {
+    getAllCommunities();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -83,7 +100,7 @@ export default function Home() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Left Sidebar - Hidden on mobile */}
           <aside className="hidden lg:col-span-3 lg:block">
-            <Sidebar />
+            <Sidebar communities={communities} />
           </aside>
 
           {/* Main Feed */}

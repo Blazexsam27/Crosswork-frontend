@@ -1,5 +1,6 @@
 import { Home, TrendingUp, Users, Bookmark, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { NavLink } from "react-router-dom";
 
 const communities = [
   { name: "Computer Science", icon: "💻", members: "45.2k" },
@@ -9,7 +10,7 @@ const communities = [
   { name: "Career Advice", icon: "💼", members: "52.3k" },
 ];
 
-export function Sidebar() {
+export function Sidebar({ communities }) {
   return (
     <div className="sticky top-20 space-y-4">
       {/* Navigation */}
@@ -48,20 +49,21 @@ export function Sidebar() {
         </h3>
         <div className="space-y-3">
           {communities.map((community) => (
-            <button
-              key={community.name}
+            <NavLink
+              to={"/community-page/" + community._id}
+              key={community.communityName}
               className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-accent"
             >
               <span className="text-2xl">{community.icon}</span>
               <div className="flex-1 min-w-0">
                 <p className="truncate text-sm font-medium text-foreground">
-                  {community.name}
+                  {community.communityName}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  {community.members} members
+                  {community.membersCount} members
                 </p>
               </div>
-            </button>
+            </NavLink>
           ))}
         </div>
         <Button variant="outline" className="mt-4 w-full bg-transparent">
