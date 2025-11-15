@@ -9,7 +9,11 @@ const trending = [
   { name: "Entrepreneurship", icon: "🚀", growth: "+18%", members: "14.9k" },
 ];
 
-export function TrendingCommunities() {
+export function TrendingCommunities({
+  setShowPostPopup,
+}: {
+  setShowPostPopup: Function;
+}) {
   return (
     <div className="sticky top-20 space-y-4">
       {/* Trending */}
@@ -46,7 +50,9 @@ export function TrendingCommunities() {
           Connect with fellow students and share your experiences, questions,
           and insights.
         </p>
-        <Button className="w-full">Create Post</Button>
+        <Button className="w-full" onClick={() => setShowPostPopup(true)}>
+          Create Post
+        </Button>
       </div>
 
       {/* Quick Links */}

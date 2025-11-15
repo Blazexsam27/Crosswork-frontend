@@ -2,14 +2,6 @@ import { Home, TrendingUp, Users, Bookmark, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NavLink } from "react-router-dom";
 
-const communities = [
-  { name: "Computer Science", icon: "💻", members: "45.2k" },
-  { name: "Business Students", icon: "📊", members: "32.1k" },
-  { name: "Study Tips", icon: "📚", members: "28.5k" },
-  { name: "Engineering", icon: "⚙️", members: "38.9k" },
-  { name: "Career Advice", icon: "💼", members: "52.3k" },
-];
-
 export function Sidebar({ communities }) {
   return (
     <div className="sticky top-20 space-y-4">

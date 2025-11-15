@@ -18,9 +18,80 @@ import {
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import { ImagePlus, Link2, FileText, X, Plus } from "lucide-react";
+import { IoClose } from "react-icons/io5";
 
-export function CreatePostForm({ communityName }: { communityName?: string }) {
+import {
+  ImagePlus,
+  Link2,
+  FileText,
+  X,
+  Plus,
+  Check,
+  ChevronsUpDown,
+} from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { cn } from "@/lib/utils";
+
+const MOCK_COMMUNITIES = [
+  {
+    id: "1",
+    name: "computer-science",
+    displayName: "Computer Science",
+    members: 15420,
+  },
+  {
+    id: "2",
+    name: "data-structures",
+    displayName: "Data Structures",
+    members: 8932,
+  },
+  {
+    id: "3",
+    name: "web-development",
+    displayName: "Web Development",
+    members: 23456,
+  },
+  {
+    id: "4",
+    name: "machine-learning",
+    displayName: "Machine Learning",
+    members: 19283,
+  },
+  {
+    id: "5",
+    name: "career-advice",
+    displayName: "Career Advice",
+    members: 12098,
+  },
+  {
+    id: "6",
+    name: "college-life",
+    displayName: "College Life",
+    members: 31245,
+  },
+  { id: "7", name: "study-tips", displayName: "Study Tips", members: 9876 },
+  { id: "8", name: "internships", displayName: "Internships", members: 7654 },
+];
+
+export function CreatePostForm({
+  communityName,
+  setShowPostPopup,
+}: {
+  communityName?: string;
+  setShowPostPopup: Function;
+}) {
   const [postType, setPostType] = useState<"text" | "image" | "link">("text");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -30,6 +101,10 @@ export function CreatePostForm({ communityName }: { communityName?: string }) {
   const [isNSFW, setIsNSFW] = useState(false);
   const [isSpoiler, setIsSpoiler] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [selectedCommunity, setSelectedCommunity] = useState(
+    communityName || ""
+  );
+  const [openCommunitySelector, setOpenCommunitySelector] = useState(false);
 
   const handleAddTag = () => {
     if (
@@ -59,7 +134,6 @@ export function CreatePostForm({ communityName }: { communityName?: string }) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle post submission logic here
     console.log({
       postType,
       title,
@@ -68,12 +142,17 @@ export function CreatePostForm({ communityName }: { communityName?: string }) {
       tags,
       isNSFW,
       isSpoiler,
-      communityName,
+      community: selectedCommunity,
     });
   };
 
   return (
-    <Card className="border-border shadow-sm">
+    <Card className="w-[55vw] h-[80vh] overflow-y-auto border-border shadow-sm relative p-4">
+      <IoClose
+        onClick={() => setShowPostPopup(false)}
+        fontSize={22}
+        className="absolute top-2 right-2 cursor-pointer"
+      />
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl font-bold">Create a Post</CardTitle>
         <CardDescription>
@@ -84,7 +163,93 @@ export function CreatePostForm({ communityName }: { communityName?: string }) {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Post Type Tabs */}
+          {!communityName && (
+            <div className="space-y-2">
+              <Label className="text-sm font-semibold">
+                Select Community <span className="text-destructive">*</span>
+              </Label>
+              <Popover
+                open={openCommunitySelector}
+                onOpenChange={setOpenCommunitySelector}
+              >
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    role="combobox"
+                    aria-expanded={openCommunitySelector}
+                    className="w-full justify-between bg-background border-border hover:bg-accent/50"
+                  >
+                    {selectedCommunity
+                      ? `c/${
+                          MOCK_COMMUNITIES.find(
+                            (c) => c.name === selectedCommunity
+                          )?.name
+                        }`
+                      : "Choose a community..."}
+                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                  <Command>
+                    <CommandInput
+                      placeholder="Search communities..."
+                      className="h-9"
+                    />
+                    <CommandList>
+                      <CommandEmpty>No community found.</CommandEmpty>
+                      <CommandGroup>
+                        {MOCK_COMMUNITIES.map((community) => (
+                          <CommandItem
+                            key={community.id}
+                            value={community.name}
+                            onSelect={(currentValue) => {
+                              setSelectedCommunity(
+                                currentValue === selectedCommunity
+                                  ? ""
+                                  : currentValue
+                              );
+                              setOpenCommunitySelector(false);
+                            }}
+                            className="cursor-pointer"
+                          >
+                            <div className="flex items-center justify-between w-full">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-xs font-bold">
+                                  {community.displayName.charAt(0)}
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="font-medium">
+                                    c/{community.name}
+                                  </span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {community.members.toLocaleString()} members
+                                  </span>
+                                </div>
+                              </div>
+                              <Check
+                                className={cn(
+                                  "h-4 w-4",
+                                  selectedCommunity === community.name
+                                    ? "opacity-100"
+                                    : "opacity-0"
+                                )}
+                              />
+                            </div>
+                          </CommandItem>
+                        ))}
+                      </CommandGroup>
+                    </CommandList>
+                  </Command>
+                </PopoverContent>
+              </Popover>
+              {selectedCommunity && (
+                <p className="text-xs text-muted-foreground">
+                  Posting to c/{selectedCommunity}
+                </p>
+              )}
+            </div>
+          )}
+
           <Tabs
             value={postType}
             onValueChange={(value) =>
@@ -107,7 +272,6 @@ export function CreatePostForm({ communityName }: { communityName?: string }) {
               </TabsTrigger>
             </TabsList>
 
-            {/* Title Field - Common for all types */}
             <div className="space-y-2 mt-6">
               <Label htmlFor="title" className="text-sm font-semibold">
                 Title <span className="text-destructive">*</span>
@@ -126,7 +290,6 @@ export function CreatePostForm({ communityName }: { communityName?: string }) {
               </p>
             </div>
 
-            {/* Text Post Content */}
             <TabsContent value="text" className="space-y-4 mt-0">
               <div className="space-y-2">
                 <Label htmlFor="content" className="text-sm font-semibold">
@@ -136,14 +299,13 @@ export function CreatePostForm({ communityName }: { communityName?: string }) {
                   id="content"
                   placeholder="What's on your mind? (Optional)"
                   value={content}
-                  onChange={(e: any) => setContent(e.target.value)}
+                  onChange={(e) => setContent(e.target.value)}
                   rows={8}
                   className="bg-background border-border focus-visible:ring-ring resize-none"
                 />
               </div>
             </TabsContent>
 
-            {/* Image Post Content */}
             <TabsContent value="image" className="space-y-4 mt-0">
               <div className="space-y-2">
                 <Label htmlFor="image-upload" className="text-sm font-semibold">
@@ -203,14 +365,13 @@ export function CreatePostForm({ communityName }: { communityName?: string }) {
                   id="image-content"
                   placeholder="Add a description to your image..."
                   value={content}
-                  onChange={(e: any) => setContent(e.target.value)}
+                  onChange={(e) => setContent(e.target.value)}
                   rows={4}
                   className="bg-background border-border focus-visible:ring-ring resize-none"
                 />
               </div>
             </TabsContent>
 
-            {/* Link Post Content */}
             <TabsContent value="link" className="space-y-4 mt-0">
               <div className="space-y-2">
                 <Label htmlFor="link-url" className="text-sm font-semibold">
@@ -242,7 +403,6 @@ export function CreatePostForm({ communityName }: { communityName?: string }) {
             </TabsContent>
           </Tabs>
 
-          {/* Tags Section */}
           <div className="space-y-3">
             <Label htmlFor="tags" className="text-sm font-semibold">
               Tags (Optional)
@@ -297,7 +457,6 @@ export function CreatePostForm({ communityName }: { communityName?: string }) {
             </p>
           </div>
 
-          {/* Post Options */}
           <div className="space-y-4 pt-4 border-t border-border">
             <h3 className="text-sm font-semibold">Post Options</h3>
 
@@ -344,6 +503,7 @@ export function CreatePostForm({ communityName }: { communityName?: string }) {
             setImagePreview(null);
             setIsNSFW(false);
             setIsSpoiler(false);
+            if (!communityName) setSelectedCommunity("");
           }}
         >
           Clear
@@ -352,7 +512,11 @@ export function CreatePostForm({ communityName }: { communityName?: string }) {
           type="submit"
           onClick={handleSubmit}
           className="w-full sm:flex-1 bg-primary hover:bg-primary/90 shadow-md"
-          disabled={!title.trim() || (postType === "link" && !linkUrl.trim())}
+          disabled={
+            !title.trim() ||
+            (postType === "link" && !linkUrl.trim()) ||
+            (!communityName && !selectedCommunity)
+          }
         >
           Post
         </Button>

@@ -4,7 +4,7 @@ import CustomDock from "../widgets/CustomDock";
 import { useEffect, useState } from "react";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
 
-export function Header() {
+export function Header({ setShowPostPopup }: { setShowPostPopup: Function }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -77,7 +77,7 @@ export function Header() {
         {/* Actions */}
         {isAuthenticated && (
           <div className="flex items-center gap-2">
-            <CustomDock />
+            <CustomDock setShowPostPopup={setShowPostPopup} />
           </div>
         )}
       </div>

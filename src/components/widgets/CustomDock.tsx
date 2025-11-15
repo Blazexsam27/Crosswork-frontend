@@ -75,7 +75,11 @@ const DATA = {
   },
 };
 
-export default function CustomDock() {
+export default function CustomDock({
+  setShowPostPopup,
+}: {
+  setShowPostPopup: Function;
+}) {
   return (
     <div className="flex flex-col items-center justify-center">
       <TooltipProvider>
@@ -84,8 +88,8 @@ export default function CustomDock() {
             <DockIcon key={item.label}>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <NavLink
-                    to={item.href}
+                  <div
+                    onClick={() => setShowPostPopup(true)}
                     aria-label={item.label}
                     className={cn(
                       buttonVariants({ variant: "ghost", size: "icon" }),
@@ -93,7 +97,7 @@ export default function CustomDock() {
                     )}
                   >
                     <item.icon className="size-4" />
-                  </NavLink>
+                  </div>
                 </TooltipTrigger>
                 <TooltipContent>
                   <p>{item.label}</p>

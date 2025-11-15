@@ -5,6 +5,8 @@ import { TrendingCommunities } from "@/components/MainFeed/TrendingCommunities";
 import TrendingPostMarquee from "@/components/MainFeed/TrendingPostMarquee";
 import communityService from "@/services/community.service";
 import { useEffect, useState } from "react";
+import { CreatePostForm } from "@/components/CommunityPage/CreatePostForm";
+import PopupWrapper from "@/components/widgets/PopupWrapper";
 
 // Sample data for posts
 const posts = [
@@ -78,6 +80,7 @@ const posts = [
 
 export default function Home() {
   const [communities, setCommunities] = useState([]);
+  const [showPostPopup, setShowPostPopup] = useState(false);
 
   const getAllCommunities = async () => {
     try {
@@ -94,7 +97,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-background">
-      <Header />
+      <Header setShowPostPopup={setShowPostPopup} />
 
       <div className="mx-auto max-w-7xl px-4 py-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -102,6 +105,13 @@ export default function Home() {
           <aside className="hidden lg:col-span-3 lg:block">
             <Sidebar communities={communities} />
           </aside>
+
+          {/* Create Post Form */}
+          {showPostPopup && (
+            <PopupWrapper>
+              <CreatePostForm setShowPostPopup={setShowPostPopup} />
+            </PopupWrapper>
+          )}
 
           {/* Main Feed */}
           <main className="lg:col-span-6">
@@ -122,7 +132,7 @@ export default function Home() {
 
           {/* Right Sidebar - Hidden on mobile and tablet */}
           <aside className="hidden xl:col-span-3 xl:block">
-            <TrendingCommunities />
+            <TrendingCommunities setShowPostPopup={setShowPostPopup} />
           </aside>
         </div>
       </div>
