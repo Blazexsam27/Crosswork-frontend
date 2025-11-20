@@ -2,7 +2,7 @@
 
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { CalendarIcon, MailIcon, PencilIcon } from "lucide-react";
+import { PencilIcon } from "lucide-react";
 import { RiApps2AddLine } from "react-icons/ri";
 
 import { cn } from "@/lib/utils";

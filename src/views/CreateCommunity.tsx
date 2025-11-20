@@ -78,8 +78,8 @@ export default function CreateCommunityPage() {
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState("");
   const [isNSFW, setIsNSFW] = useState(false);
-  const [communityIcon, setCommunityIcon] = useState(null);
-  const [coverImage, setCoverImage] = useState(null);
+  const [communityIcon] = useState(null);
+  const [coverImage] = useState(null);
   // const [iconPreview, setIconPreview] = useState<string | null>(null);
   // const [coverPreview, setCoverPreview] = useState(null);
   const user: UserType = getFromLocalStorage("user");
@@ -100,8 +100,8 @@ export default function CreateCommunityPage() {
   }
   const [submitStatus, setSubmitStatus] = useState<SubmitStatus | null>(null);
 
-  const iconInputRef = useRef<HTMLInputElement>(null);
-  const coverInputRef = useRef<HTMLInputElement>(null);
+  // const iconInputRef = useRef<HTMLInputElement>(null);
+  // const coverInputRef = useRef<HTMLInputElement>(null);
 
   const categories = [
     "Technology",
