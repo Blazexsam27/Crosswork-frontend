@@ -5,9 +5,8 @@ import { TrendingCommunities } from "@/components/MainFeed/TrendingCommunities";
 import TrendingPostMarquee from "@/components/MainFeed/TrendingPostMarquee";
 import communityService from "@/services/community.service";
 import { useEffect, useState } from "react";
-import { CreatePostForm } from "@/components/CommunityPage/CreatePostForm";
-import PopupWrapper from "@/components/widgets/PopupWrapper";
-
+import CreatePostForm from "@/components/CommunityPage/CreatePostForm";
+import { QuickAccessPanel } from "@/components/MainFeed/QuickAccessPanel";
 // Sample data for posts
 const posts = [
   {
@@ -81,6 +80,9 @@ const posts = [
 export default function Home() {
   const [communities, setCommunities] = useState([]);
   const [showPostPopup, setShowPostPopup] = useState(false);
+  const [selectedQuickAccessTab, setSelectedQuickAccessTab] = useState<
+    "communities" | "saved" | "trending"
+  >("communities");
 
   const getAllCommunities = async () => {
     try {
@@ -103,16 +105,16 @@ export default function Home() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
           {/* Left Sidebar - Hidden on mobile */}
           <aside className="hidden lg:col-span-3 lg:block">
-            <Sidebar communities={communities} />
+            <Sidebar
+              communities={communities}
+              setSelectedQuickAccessTab={setSelectedQuickAccessTab}
+            />
           </aside>
 
-          {/* Create Post Form */}
-          {showPostPopup && (
-            <PopupWrapper>
-              <CreatePostForm setShowPostPopup={setShowPostPopup} />
-            </PopupWrapper>
-          )}
-
+          <CreatePostForm
+            open={showPostPopup}
+            onOpenChange={(value) => setShowPostPopup(value)}
+          />
           {/* Main Feed */}
           <main className="lg:col-span-6">
             {/* <div className="mb-4 flex items-center justify-between">
@@ -122,6 +124,8 @@ export default function Home() {
                 <option>Top</option>
               </select>
             </div> */}
+
+            <QuickAccessPanel selectedQuickAccessTab={selectedQuickAccessTab} />
             <TrendingPostMarquee />
             <div className="space-y-4">
               {posts.map((post) => (
@@ -132,7 +136,10 @@ export default function Home() {
 
           {/* Right Sidebar - Hidden on mobile and tablet */}
           <aside className="hidden xl:col-span-3 xl:block">
-            <TrendingCommunities setShowPostPopup={setShowPostPopup} />
+            <TrendingCommunities
+              communities={communities}
+              setShowPostPopup={setShowPostPopup}
+            />
           </aside>
         </div>
       </div>

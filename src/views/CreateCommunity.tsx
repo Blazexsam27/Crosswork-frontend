@@ -13,11 +13,63 @@ import { getFromLocalStorage } from "@/utils/webstorage.utls";
 import type { UserType } from "@/types/user/userTypes";
 import communityService from "@/services/community.service";
 
+const defaultLogos = [
+  {
+    image: "/assets/lg_1.png",
+    text: "Bridge",
+  },
+  {
+    image: "/assets/lg_2.png",
+    text: "Desk Setup",
+  },
+  {
+    image: "/assets/lg_3.png",
+    text: "Waterfall",
+  },
+  {
+    image: "/assets/lg_4.png",
+    text: "Strawberries",
+  },
+  {
+    image: "/assets/lg_5.png",
+    text: "Deep Diving",
+  },
+  {
+    image: "/assets/lg_6.png",
+    text: "Train Track",
+  },
+  {
+    image: "/assets/lg_7.png",
+    text: "Santorini",
+  },
+  {
+    image: "/assets/lg_8.png",
+    text: "Blurry Lights",
+  },
+  {
+    image: "/assets/lg_9.png",
+    text: "New York",
+  },
+  {
+    image: "/assets/lg_10.png",
+    text: "Good Boy",
+  },
+  {
+    image: "/assets/lg_11.png",
+    text: "Coastline",
+  },
+  {
+    image: "/assets/lg_12.png",
+    text: "Palm Trees",
+  },
+];
+
 export default function CreateCommunityPage() {
   const [communityName, setCommunityName] = useState("");
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState("");
   const [privacyType, setPrivacyType] = useState("public");
+  const [selectedLogo, setSelectedLogo] = useState<string | null>("lg_1.png");
   const [rules, setRules] = useState<{ title: string; description: string }[]>(
     []
   );
@@ -292,7 +344,7 @@ export default function CreateCommunityPage() {
       formData.append("description", description);
       formData.append("category", category);
       formData.append("type", privacyType);
-      formData.append("communityIcon", "Community Icon");
+      formData.append("communityIcon", selectedLogo ? selectedLogo : "");
       formData.append("communityCoverImage", "communityCoverImage");
       formData.append("moderators", user._id);
       formData.append("createdBy", user._id);
@@ -531,9 +583,9 @@ export default function CreateCommunityPage() {
               Visual Identity
             </h2>
 
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className=" gap-6  h-max">
               {/* Community Icon */}
-              <div>
+              {/* <div>
                 <label className="mb-2 block text-sm font-medium text-gray-900">
                   Community Icon
                 </label>
@@ -579,10 +631,10 @@ export default function CreateCommunityPage() {
                 {errors.icon && (
                   <p className="mt-1.5 text-xs text-red-600">{errors.icon}</p>
                 )}
-              </div>
+              </div> */}
 
               {/* Cover Image */}
-              <div>
+              {/* <div>
                 <label className="mb-2 block text-sm font-medium text-gray-900">
                   Cover Image
                 </label>
@@ -628,6 +680,21 @@ export default function CreateCommunityPage() {
                 {errors.cover && (
                   <p className="mt-1.5 text-xs text-red-600">{errors.cover}</p>
                 )}
+              </div> */}
+
+              <div className="flex flex-wrap gap-4">
+                {defaultLogos.map((logo, index) => {
+                  return (
+                    <img
+                      className={`w-24 h-auto  hover:border-purple-500 duration-300 transition-all cursor-pointer rounded-lg border-gray-300 border-2 ${
+                        selectedLogo === logo.image ? "border-purple-500" : ""
+                      }`}
+                      key={index}
+                      src={logo.image}
+                      onClick={() => setSelectedLogo(logo.image)}
+                    />
+                  );
+                })}
               </div>
             </div>
           </div>

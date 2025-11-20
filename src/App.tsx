@@ -9,13 +9,18 @@ import "./App.css";
 import ChatBox from "./components/widgets/ChatBox";
 import ProtectedRoute from "./ProtectedRoutes";
 import { useEffect, useState, lazy, Suspense } from "react";
-import { getFromLocalStorage } from "./utils/webstorage.utls";
+import {
+  getFromLocalStorage,
+  getFromSessionStorage,
+  setInSessionStorage,
+} from "./utils/webstorage.utls";
 import Loader from "./components/widgets/Loader";
 import ForgotPass from "./components/Auth/ForgotPass";
 import ResetPassword from "./components/Auth/ResetPassword";
 import MainFeed from "./views/MainFeed";
 import CreateCommunity from "./views/CreateCommunity";
 import CommunityPage from "./views/CommunityPage";
+import PatchNotePopup from "./components/widgets/PatchNotePopup";
 
 // Dynamically imported components
 const Home = lazy(() => import("./views/Home"));
@@ -32,11 +37,19 @@ const DiscussionPage = lazy(() => import("./views/DiscussionPage"));
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     const token = getFromLocalStorage("authToken");
     if (token) {
       setIsAuthenticated(true);
+    }
+
+    const visited = getFromSessionStorage("hasVisited");
+
+    if (!visited) {
+      setShowPopup(true);
+      setInSessionStorage("hasVisited", true);
     }
   }, []);
 
@@ -44,6 +57,7 @@ function App() {
     <Provider store={store}>
       <BrowserRouter>
         <Navbar />
+        {showPopup && <PatchNotePopup onClose={() => setShowPopup(false)} />}
         {isAuthenticated && <ChatBox />}
         <Suspense fallback={<Loader />}>
           <Routes>

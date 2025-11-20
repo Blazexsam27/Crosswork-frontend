@@ -1,25 +1,14 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
-import { IoClose } from "react-icons/io5";
-
 import {
   ImagePlus,
   Link2,
@@ -42,6 +31,14 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 
 const MOCK_COMMUNITIES = [
@@ -85,13 +82,17 @@ const MOCK_COMMUNITIES = [
   { id: "8", name: "internships", displayName: "Internships", members: 7654 },
 ];
 
-export function CreatePostForm({
-  communityName,
-  setShowPostPopup,
-}: {
+interface CreatePostFormProps {
   communityName?: string;
-  setShowPostPopup: Function;
-}) {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
+
+export default function CreatePostForm({
+  communityName,
+  open,
+  onOpenChange,
+}: CreatePostFormProps) {
   const [postType, setPostType] = useState<"text" | "image" | "link">("text");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -132,6 +133,19 @@ export function CreatePostForm({
     }
   };
 
+  const resetForm = () => {
+    setTitle("");
+    setContent("");
+    setLinkUrl("");
+    setTags([]);
+    setImagePreview(null);
+    setIsNSFW(false);
+    setIsSpoiler(false);
+    if (!communityName) setSelectedCommunity("");
+    setPostType("text");
+    setCurrentTag("");
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     console.log({
@@ -144,24 +158,24 @@ export function CreatePostForm({
       isSpoiler,
       community: selectedCommunity,
     });
+    onOpenChange(false);
+    resetForm();
   };
 
   return (
-    <Card className="w-[55vw] h-[80vh] overflow-y-auto border-border shadow-sm relative p-4">
-      <IoClose
-        onClick={() => setShowPostPopup(false)}
-        fontSize={22}
-        className="absolute top-2 right-2 cursor-pointer"
-      />
-      <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold">Create a Post</CardTitle>
-        <CardDescription>
-          {communityName
-            ? `Share your thoughts in ${communityName}`
-            : "Share your thoughts with the community"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-5xl min-w-[50%]  max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold">
+            Create a Post
+          </DialogTitle>
+          <DialogDescription>
+            {communityName
+              ? `Share your thoughts in ${communityName}`
+              : "Share your thoughts with the community"}
+          </DialogDescription>
+        </DialogHeader>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           {!communityName && (
             <div className="space-y-2">
@@ -300,7 +314,7 @@ export function CreatePostForm({
                   placeholder="What's on your mind? (Optional)"
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  rows={8}
+                  rows={6}
                   className="bg-background border-border focus-visible:ring-ring resize-none"
                 />
               </div>
@@ -325,7 +339,7 @@ export function CreatePostForm({
                         <img
                           src={imagePreview || "/placeholder.svg"}
                           alt="Preview"
-                          className="max-h-64 mx-auto rounded-lg"
+                          className="max-h-48 mx-auto rounded-lg"
                         />
                         <Button
                           type="button"
@@ -366,7 +380,7 @@ export function CreatePostForm({
                   placeholder="Add a description to your image..."
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  rows={4}
+                  rows={3}
                   className="bg-background border-border focus-visible:ring-ring resize-none"
                 />
               </div>
@@ -396,7 +410,7 @@ export function CreatePostForm({
                   placeholder="Tell us more about this link..."
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  rows={4}
+                  rows={3}
                   className="bg-background border-border focus-visible:ring-ring resize-none"
                 />
               </div>
@@ -488,39 +502,30 @@ export function CreatePostForm({
               />
             </div>
           </div>
+
+          <DialogFooter className="flex flex-col sm:flex-row gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full sm:w-auto bg-transparent"
+              onClick={resetForm}
+            >
+              Clear
+            </Button>
+            <Button
+              type="submit"
+              className="w-full sm:flex-1 bg-primary hover:bg-primary/90 shadow-md"
+              disabled={
+                !title.trim() ||
+                (postType === "link" && !linkUrl.trim()) ||
+                (!communityName && !selectedCommunity)
+              }
+            >
+              Post
+            </Button>
+          </DialogFooter>
         </form>
-      </CardContent>
-      <CardFooter className="flex flex-col sm:flex-row gap-3 bg-muted/20 border-t border-border">
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full sm:w-auto bg-transparent"
-          onClick={() => {
-            setTitle("");
-            setContent("");
-            setLinkUrl("");
-            setTags([]);
-            setImagePreview(null);
-            setIsNSFW(false);
-            setIsSpoiler(false);
-            if (!communityName) setSelectedCommunity("");
-          }}
-        >
-          Clear
-        </Button>
-        <Button
-          type="submit"
-          onClick={handleSubmit}
-          className="w-full sm:flex-1 bg-primary hover:bg-primary/90 shadow-md"
-          disabled={
-            !title.trim() ||
-            (postType === "link" && !linkUrl.trim()) ||
-            (!communityName && !selectedCommunity)
-          }
-        >
-          Post
-        </Button>
-      </CardFooter>
-    </Card>
+      </DialogContent>
+    </Dialog>
   );
 }

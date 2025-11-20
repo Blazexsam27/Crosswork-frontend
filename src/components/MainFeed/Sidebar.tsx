@@ -1,8 +1,15 @@
-import { Home, TrendingUp, Users, Bookmark, Settings } from "lucide-react";
+import { TrendingUp, Users, Bookmark, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
-export function Sidebar({ communities }) {
+export function Sidebar({
+  communities,
+  setSelectedQuickAccessTab,
+}: {
+  communities: any;
+  setSelectedQuickAccessTab: Function;
+}) {
+  const navigate = useNavigate();
   return (
     <div className="sticky top-20 space-y-4">
       {/* Navigation */}
@@ -10,24 +17,33 @@ export function Sidebar({ communities }) {
         <nav className="space-y-1">
           <Button
             variant="ghost"
-            className="w-full justify-start gap-3 bg-accent text-accent-foreground"
+            className="w-full justify-start gap-3"
+            onClick={() => setSelectedQuickAccessTab("trending")}
           >
-            <Home className="h-5 w-5" />
-            <span>Home</span>
-          </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3">
             <TrendingUp className="h-5 w-5" />
             <span>Trending</span>
           </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3">
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3"
+            onClick={() => setSelectedQuickAccessTab("communities")}
+          >
             <Users className="h-5 w-5" />
             <span>My Communities</span>
           </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3">
+          <Button
+            variant="ghost"
+            className="w-full justify-start gap-3"
+            onClick={() => setSelectedQuickAccessTab("saved")}
+          >
             <Bookmark className="h-5 w-5" />
-            <span>Saved</span>
+            <span>Saved Posts</span>
           </Button>
-          <Button variant="ghost" className="w-full justify-start gap-3">
+          <Button
+            onClick={() => navigate("/profile")}
+            variant="ghost"
+            className="w-full justify-start gap-3"
+          >
             <Settings className="h-5 w-5" />
             <span>Settings</span>
           </Button>
@@ -40,13 +56,15 @@ export function Sidebar({ communities }) {
           Popular Communities
         </h3>
         <div className="space-y-3">
-          {communities.map((community) => (
+          {communities.map((community: any) => (
             <NavLink
               to={"/community-page/" + community._id}
               key={community.communityName}
               className="flex w-full items-center gap-3 rounded-lg p-2 text-left transition-colors hover:bg-accent"
             >
-              <span className="text-2xl">{community.icon}</span>
+              <span className="text-2xl">
+                <img src={community.communityIcon} alt="" className="w-8 h-8" />
+              </span>
               <div className="flex-1 min-w-0">
                 <p className="truncate text-sm font-medium text-foreground">
                   {community.communityName}

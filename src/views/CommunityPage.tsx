@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import {
   ArrowLeft,
@@ -157,7 +155,7 @@ export default function CommunityPage() {
             <div className="flex gap-4">
               {/* Community Icon */}
               <div className="-mt-8 flex h-20 w-20 items-center justify-center rounded-full border-4 border-card bg-gradient-to-br from-primary/20 to-accent/20 text-4xl shadow-lg sm:h-24 sm:w-24 sm:text-5xl">
-                {communityData.icon}
+                <img src={comm?.communityIcon} alt="" />
               </div>
 
               {/* Name and Stats */}

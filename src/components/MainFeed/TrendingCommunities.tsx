@@ -1,17 +1,12 @@
 import { TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const trending = [
-  { name: "Data Science", icon: "📈", growth: "+12%", members: "23.4k" },
-  { name: "Pre-Med", icon: "🏥", growth: "+8%", members: "19.2k" },
-  { name: "Law School", icon: "⚖️", growth: "+15%", members: "16.8k" },
-  { name: "Design", icon: "🎨", growth: "+10%", members: "21.5k" },
-  { name: "Entrepreneurship", icon: "🚀", growth: "+18%", members: "14.9k" },
-];
+import { NavLink } from "react-router-dom";
 
 export function TrendingCommunities({
+  communities,
   setShowPostPopup,
 }: {
+  communities: any;
   setShowPostPopup: Function;
 }) {
   return (
@@ -23,19 +18,24 @@ export function TrendingCommunities({
           <h3 className="font-semibold text-foreground">Trending Today</h3>
         </div>
         <div className="space-y-3">
-          {trending.map((item, index) => (
-            <div key={item.name} className="flex items-center gap-3">
+          {communities.map((community: any, index: number) => (
+            <div key={community.name} className="flex items-center gap-3">
               <span className="text-lg font-bold text-muted-foreground">
                 {index + 1}
               </span>
-              <span className="text-2xl">{item.icon}</span>
+              {/* icon */}
+              <span className="text-2xl">
+                {" "}
+                <img src={community.communityIcon} alt="" className="w-8 h-8" />
+              </span>
               <div className="flex-1 min-w-0">
                 <p className="truncate text-sm font-medium text-foreground">
-                  {item.name}
+                  {community.communityName}
                 </p>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <span>{item.members} members</span>
-                  <span className="text-chart-2">↑ {item.growth}</span>
+                  <span>{community.members} members</span>
+                  {/* growth percentage */}
+                  <span className="text-chart-2">↑ </span>
                 </div>
               </div>
             </div>
@@ -61,12 +61,12 @@ export function TrendingCommunities({
           Quick Links
         </h3>
         <div className="space-y-2 text-sm">
-          <a
-            href="#"
+          <NavLink
+            to="/about"
             className="block text-muted-foreground hover:text-foreground"
           >
             About
-          </a>
+          </NavLink>
           <a
             href="#"
             className="block text-muted-foreground hover:text-foreground"
