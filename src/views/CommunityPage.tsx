@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Users,
-  Eye,
   Calendar,
   Plus,
   Share2,
@@ -15,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { FeedCard } from "@/components/MainFeed/FeedCard";
 import communityService from "@/services/community.service";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
+import type { CommunityType } from "@/types/community/communityTypes";
 
 // Mock community data
 const communityData = {
@@ -111,7 +111,7 @@ export default function CommunityPage() {
   const { id } = useParams();
   const userData = getFromLocalStorage("user");
 
-  const [comm, setComm] = useState(null);
+  const [comm, setComm] = useState<CommunityType | null>(null);
 
   const getCommunityById = async () => {
     if (!id) return;
@@ -170,16 +170,17 @@ export default function CommunityPage() {
                     <span>members</span>
                   </div>
                   <span>•</span>
-                  <div className="flex items-center gap-1.5">
+                  {/* <div className="flex items-center gap-1.5">
                     <Eye className="h-4 w-4" />
                     <span className="font-medium">{comm?.online}</span>
                     <span>online</span>
-                  </div>
+                  </div> */}
                   <span>•</span>
                   <div className="flex items-center gap-1.5">
                     <Calendar className="h-4 w-4" />
                     <span>
-                      Created {new Date(comm?.createdAt).toLocaleDateString()}
+                      Created{" "}
+                      {comm && new Date(comm?.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
@@ -344,7 +345,7 @@ export default function CommunityPage() {
                   <div className="space-y-3">
                     {comm?.moderators.map((mod) => (
                       <div key={mod.name} className="flex items-center gap-3">
-                        <span className="text-2xl">{mod.avatar}</span>
+                        <span className="text-2xl">{mod.profilePic}</span>
                         <span className="text-sm font-medium text-foreground">
                           u/{mod.name}
                         </span>
@@ -370,19 +371,19 @@ export default function CommunityPage() {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Members</span>
                     <span className="font-semibold text-foreground">
-                      {comm?.members}
+                      {comm?.membersCount}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
+                  {/* <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Online</span>
                     <span className="font-semibold text-chart-2">
                       {comm?.online}
                     </span>
-                  </div>
+                  </div> */}
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Created</span>
                     <span className="font-semibold text-foreground">
-                      {new Date(comm?.createdAt).toLocaleDateString()}
+                      {comm && new Date(comm.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
@@ -427,7 +428,7 @@ export default function CommunityPage() {
                       key={mod.name}
                       className="flex items-center gap-2 text-sm"
                     >
-                      <span className="text-lg">{mod.avatar}</span>
+                      <span className="text-lg">{mod.profilePic}</span>
                       <span className="text-foreground">u/{mod.name}</span>
                     </div>
                   ))}

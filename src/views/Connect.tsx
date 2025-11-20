@@ -9,7 +9,7 @@ import connectService from "@/services/connect.service";
 import { ToastContainer, toast } from "react-toastify";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
 import StudentCard from "@/components/widgets/StudentCard";
-import type { Student, StudentResponse } from "@/types/user/userTypes";
+import type { StudentResponse } from "@/types/user/userTypes";
 import StudentProfileModal from "@/components/Connect/StudentProfileModal";
 
 export default function ConnectionsPage() {
@@ -29,6 +29,8 @@ export default function ConnectionsPage() {
 
   const user = getFromLocalStorage("user");
   const handleConnect = async (studentId: string) => {
+    console.log(suggestedStudents);
+    console.log(connectionStates);
     try {
       await connectService.sendConnectRequest(studentId, user._id);
       setConnectionStates((prev) => ({

@@ -1,10 +1,8 @@
 import { useState, useRef } from "react";
 import {
   ArrowLeft,
-  Upload,
   Plus,
   X,
-  ImageIcon,
   Info,
   AlertCircle,
   CheckCircle,
@@ -82,8 +80,8 @@ export default function CreateCommunityPage() {
   const [isNSFW, setIsNSFW] = useState(false);
   const [communityIcon, setCommunityIcon] = useState(null);
   const [coverImage, setCoverImage] = useState(null);
-  const [iconPreview, setIconPreview] = useState<string | null>(null);
-  const [coverPreview, setCoverPreview] = useState(null);
+  // const [iconPreview, setIconPreview] = useState<string | null>(null);
+  // const [coverPreview, setCoverPreview] = useState(null);
   const user: UserType = getFromLocalStorage("user");
   interface FormErrors {
     name?: string | null;
@@ -169,49 +167,49 @@ export default function CreateCommunityPage() {
   };
 
   // Image handling
-  const handleImageUpload = (e: any, type: any) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // const handleImageUpload = (e: any, type: any) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
 
-    const maxSize = type === "icon" ? MAX_ICON_SIZE : MAX_COVER_SIZE;
-    const error = validateImage(
-      file,
-      maxSize,
-      type === "icon" ? "Icon" : "Cover image"
-    );
+  //   const maxSize = type === "icon" ? MAX_ICON_SIZE : MAX_COVER_SIZE;
+  //   const error = validateImage(
+  //     file,
+  //     maxSize,
+  //     type === "icon" ? "Icon" : "Cover image"
+  //   );
 
-    if (error) {
-      setErrors((prev) => ({ ...prev, [type]: error }));
-      return;
-    }
+  //   if (error) {
+  //     setErrors((prev) => ({ ...prev, [type]: error }));
+  //     return;
+  //   }
 
-    // Create preview
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      if (type === "icon") {
-        setIconPreview(reader.result);
-        setCommunityIcon(file);
-        setErrors((prev) => ({ ...prev, icon: null }));
-      } else {
-        setCoverPreview(reader.result);
-        setCoverImage(file);
-        setErrors((prev) => ({ ...prev, cover: null }));
-      }
-    };
-    reader.readAsDataURL(file);
-  };
+  //   // Create preview
+  //   const reader = new FileReader();
+  //   reader.onloadend = () => {
+  //     if (type === "icon") {
+  //       setIconPreview(reader.result);
+  //       setCommunityIcon(file);
+  //       setErrors((prev) => ({ ...prev, icon: null }));
+  //     } else {
+  //       setCoverPreview(reader.result);
+  //       setCoverImage(file);
+  //       setErrors((prev) => ({ ...prev, cover: null }));
+  //     }
+  //   };
+  //   reader.readAsDataURL(file);
+  // };
 
-  const removeImage = (type: string) => {
-    if (type === "icon") {
-      setCommunityIcon(null);
-      setIconPreview(null);
-      if (iconInputRef.current) iconInputRef.current.value = "";
-    } else {
-      setCoverImage(null);
-      setCoverPreview(null);
-      if (coverInputRef.current) coverInputRef.current.value = "";
-    }
-  };
+  // const removeImage = (type: string) => {
+  //   if (type === "icon") {
+  //     setCommunityIcon(null);
+  //     setIconPreview(null);
+  //     if (iconInputRef.current) iconInputRef.current.value = "";
+  //   } else {
+  //     setCoverImage(null);
+  //     setCoverPreview(null);
+  //     if (coverInputRef.current) coverInputRef.current.value = "";
+  //   }
+  // };
 
   // Rule management
   const addRule = () => {
