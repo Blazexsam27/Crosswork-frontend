@@ -1,7 +1,5 @@
-"use client";
-
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -40,47 +38,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
-
-const MOCK_COMMUNITIES = [
-  {
-    id: "1",
-    name: "computer-science",
-    displayName: "Computer Science",
-    members: 15420,
-  },
-  {
-    id: "2",
-    name: "data-structures",
-    displayName: "Data Structures",
-    members: 8932,
-  },
-  {
-    id: "3",
-    name: "web-development",
-    displayName: "Web Development",
-    members: 23456,
-  },
-  {
-    id: "4",
-    name: "machine-learning",
-    displayName: "Machine Learning",
-    members: 19283,
-  },
-  {
-    id: "5",
-    name: "career-advice",
-    displayName: "Career Advice",
-    members: 12098,
-  },
-  {
-    id: "6",
-    name: "college-life",
-    displayName: "College Life",
-    members: 31245,
-  },
-  { id: "7", name: "study-tips", displayName: "Study Tips", members: 9876 },
-  { id: "8", name: "internships", displayName: "Internships", members: 7654 },
-];
+import communityService from "@/services/community.service";
+import type { CommunityType } from "@/types/community/communityTypes";
+import { getFromLocalStorage } from "@/utils/webstorage.utls";
+import postsService from "@/services/posts.service";
+import { getCommunityIdFromName } from "@/utils/community.utils";
 
 interface CreatePostFormProps {
   communityName?: string;
@@ -95,7 +57,7 @@ export default function CreatePostForm({
 }: CreatePostFormProps) {
   const [postType, setPostType] = useState<"text" | "image" | "link">("text");
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [body, setBody] = useState("");
   const [linkUrl, setLinkUrl] = useState("");
   const [tags, setTags] = useState<string[]>([]);
   const [currentTag, setCurrentTag] = useState("");
@@ -106,6 +68,8 @@ export default function CreatePostForm({
     communityName || ""
   );
   const [openCommunitySelector, setOpenCommunitySelector] = useState(false);
+  const [communities, setCommunities] = useState<CommunityType[]>([]);
+  const currentUser = getFromLocalStorage("user");
 
   const handleAddTag = () => {
     if (
@@ -135,7 +99,7 @@ export default function CreatePostForm({
 
   const resetForm = () => {
     setTitle("");
-    setContent("");
+    setBody("");
     setLinkUrl("");
     setTags([]);
     setImagePreview(null);
@@ -146,21 +110,42 @@ export default function CreatePostForm({
     setCurrentTag("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({
-      postType,
-      title,
-      content,
-      linkUrl,
-      tags,
-      isNSFW,
-      isSpoiler,
-      community: selectedCommunity,
-    });
-    onOpenChange(false);
-    resetForm();
+
+    try {
+      const postData = {
+        author: currentUser._id,
+        postType,
+        title,
+        body,
+        linkUrl,
+        tags,
+        isNSFW,
+        isSpoiler,
+        community: getCommunityIdFromName(communities, selectedCommunity),
+        image: imagePreview,
+      };
+      const response = await postsService.createPost(postData);
+      console.log("Post created successfully", response);
+    } catch (error) {
+      console.error("Error while creating post", error);
+    }
+    // resetForm();
   };
+
+  const getAllCommunities = async () => {
+    try {
+      const communities = await communityService.getAllCommunities();
+      setCommunities(communities);
+    } catch (error) {
+      console.error("Error while getting communities", error);
+    }
+  };
+
+  useEffect(() => {
+    getAllCommunities();
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -195,9 +180,9 @@ export default function CreatePostForm({
                   >
                     {selectedCommunity
                       ? `c/${
-                          MOCK_COMMUNITIES.find(
-                            (c) => c.name === selectedCommunity
-                          )?.name
+                          communities.find(
+                            (c) => c.communityName === selectedCommunity
+                          )?.communityName
                         }`
                       : "Choose a community..."}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -212,10 +197,10 @@ export default function CreatePostForm({
                     <CommandList>
                       <CommandEmpty>No community found.</CommandEmpty>
                       <CommandGroup>
-                        {MOCK_COMMUNITIES.map((community) => (
+                        {communities.map((community) => (
                           <CommandItem
-                            key={community.id}
-                            value={community.name}
+                            key={community.communityName}
+                            value={community.communityName}
                             onSelect={(currentValue) => {
                               setSelectedCommunity(
                                 currentValue === selectedCommunity
@@ -229,21 +214,21 @@ export default function CreatePostForm({
                             <div className="flex items-center justify-between w-full">
                               <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center text-xs font-bold">
-                                  {community.displayName.charAt(0)}
+                                  {community.communityName.charAt(0)}
                                 </div>
                                 <div className="flex flex-col">
                                   <span className="font-medium">
-                                    c/{community.name}
+                                    c/{community.communityName}
                                   </span>
                                   <span className="text-xs text-muted-foreground">
-                                    {community.members.toLocaleString()} members
+                                    {community.membersCount} members
                                   </span>
                                 </div>
                               </div>
                               <Check
                                 className={cn(
                                   "h-4 w-4",
-                                  selectedCommunity === community.name
+                                  selectedCommunity === community.communityName
                                     ? "opacity-100"
                                     : "opacity-0"
                                 )}
@@ -312,8 +297,8 @@ export default function CreatePostForm({
                 <Textarea
                   id="content"
                   placeholder="What's on your mind? (Optional)"
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
                   rows={6}
                   className="bg-background border-border focus-visible:ring-ring resize-none"
                 />
@@ -378,8 +363,8 @@ export default function CreatePostForm({
                 <Textarea
                   id="image-content"
                   placeholder="Add a description to your image..."
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
                   rows={3}
                   className="bg-background border-border focus-visible:ring-ring resize-none"
                 />
@@ -408,8 +393,8 @@ export default function CreatePostForm({
                 <Textarea
                   id="link-content"
                   placeholder="Tell us more about this link..."
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  value={body}
+                  onChange={(e) => setBody(e.target.value)}
                   rows={3}
                   className="bg-background border-border focus-visible:ring-ring resize-none"
                 />

@@ -15,6 +15,8 @@ import { FeedCard } from "@/components/MainFeed/FeedCard";
 import communityService from "@/services/community.service";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
 import type { CommunityType } from "@/types/community/communityTypes";
+import postsService from "@/services/posts.service";
+import type { PostType } from "@/types/post/post.types";
 
 // Mock community data
 const communityData = {
@@ -59,54 +61,13 @@ const communityData = {
 };
 
 // Mock posts data
-const communityPosts = [
-  {
-    id: 1,
-    community: "Computer Science Hub",
-    communityIcon: "💻",
-    author: "sarah_dev",
-    timeAgo: "3h ago",
-    title:
-      "Just landed my first internship at a FAANG company! Here's what helped me",
-    content:
-      "After months of preparation and countless applications, I finally got an offer. Happy to share my journey and answer any questions!",
-    upvotes: 342,
-    comments: 67,
-    tags: ["Career", "Internship"],
-  },
-  {
-    id: 2,
-    community: "Computer Science Hub",
-    communityIcon: "💻",
-    author: "john_student",
-    timeAgo: "5h ago",
-    title: "Best data structures and algorithms resources for beginners?",
-    content:
-      "I'm struggling with DSA concepts and need some good resources. What helped you master these topics?",
-    upvotes: 156,
-    comments: 43,
-    tags: ["Learning", "DSA"],
-  },
-  {
-    id: 3,
-    community: "Computer Science Hub",
-    communityIcon: "💻",
-    author: "emma_coder",
-    timeAgo: "8h ago",
-    title: "Built my first full-stack app! Feedback appreciated",
-    content:
-      "Spent the last 3 months building a task management app with React and Node.js. Would love to hear your thoughts!",
-    upvotes: 289,
-    comments: 52,
-    tags: ["Project", "Web Dev"],
-  },
-];
 
 export default function CommunityPage() {
   const [isJoined, setIsJoined] = useState(communityData.isJoined);
   const [isNotified, setIsNotified] = useState(false);
   const [activeTab, setActiveTab] = useState<"posts" | "about">("posts");
   const [sortBy, setSortBy] = useState("hot");
+  const [communityPosts, setCommunityPosts] = useState([]);
 
   const { id } = useParams();
   const userData = getFromLocalStorage("user");
@@ -118,15 +79,27 @@ export default function CommunityPage() {
 
     try {
       const comm = await communityService.getCommunityById(id);
-      console.log("co", comm);
       setComm(comm);
     } catch (error) {
       console.error("Error while getting community details", error);
     }
   };
 
+  const getCommunityPosts = async () => {
+    if (!id) return;
+
+    try {
+      const posts = await postsService.getPostsByCommunityId(id);
+      console.log("posts", posts);
+      setCommunityPosts(posts);
+    } catch (error) {
+      console.error("Error while getting community posts", error);
+    }
+  };
+
   useEffect(() => {
     getCommunityById();
+    getCommunityPosts();
   }, []);
 
   return (
@@ -286,9 +259,10 @@ export default function CommunityPage() {
 
                 {/* Posts Feed */}
                 <div className="space-y-4">
-                  {communityPosts.map((post) => (
-                    <FeedCard key={post.id} post={post} />
-                  ))}
+                  {communityPosts.map(
+                    (post: PostType) =>
+                      comm && <FeedCard key={post._id} post={post} />
+                  )}
                 </div>
               </>
             )}

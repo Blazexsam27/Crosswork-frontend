@@ -30,6 +30,17 @@ class PostsService {
     }
   }
 
+  async getPostsByCommunityId(communityId: string) {
+    try {
+      const response = await axios.get(
+        `${this.endpoint}/community/${communityId}`
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+
   async getPostsByUser(userId: string) {
     try {
       const response = await axios.get(`${this.endpoint}/user/${userId}`);

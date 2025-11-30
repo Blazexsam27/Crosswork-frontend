@@ -50,6 +50,15 @@ class CommunityService {
       throw new Error(error);
     }
   };
+
+  getCommunityPosts = async (communityId: string) => {
+    try {
+      const response = await axios.get(`${this.endpoint}/${communityId}/posts`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
 }
 
 export default new CommunityService();

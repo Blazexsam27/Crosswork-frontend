@@ -1,6 +1,7 @@
 import type { StudentResponse } from "../user/userTypes";
 
 export type CommunityType = {
+  _id: string;
   communityName: string;
   description: string;
   category: string;
