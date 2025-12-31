@@ -39,6 +39,28 @@ class UserService {
       throw new Error(error);
     }
   };
+
+  joinCommunity = async (communityId: string) => {
+    try {
+      const response = await axios.post(
+        `/api/users/join-community/${communityId}`
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
+
+  leaveCommunity = async (communityId: string) => {
+    try {
+      const response = await axios.post(
+        `/api/users/leave-community/${communityId}`
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
 }
 
 export default new UserService();

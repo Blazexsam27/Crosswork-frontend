@@ -43,17 +43,22 @@ import type { CommunityType } from "@/types/community/communityTypes";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
 import postsService from "@/services/posts.service";
 import { getCommunityIdFromName } from "@/utils/community.utils";
+import { useToast } from "@/hooks/use-toast";
 
 interface CreatePostFormProps {
   communityName?: string;
+  communityId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onPostCreated?: () => void;
 }
 
 export default function CreatePostForm({
   communityName,
+  communityId,
   open,
   onOpenChange,
+  onPostCreated,
 }: CreatePostFormProps) {
   const [postType, setPostType] = useState<"text" | "image" | "link">("text");
   const [title, setTitle] = useState("");
@@ -70,6 +75,7 @@ export default function CreatePostForm({
   const [openCommunitySelector, setOpenCommunitySelector] = useState(false);
   const [communities, setCommunities] = useState<CommunityType[]>([]);
   const currentUser = getFromLocalStorage("user");
+  const { toast } = useToast();
 
   const handleAddTag = () => {
     if (
@@ -123,15 +129,32 @@ export default function CreatePostForm({
         tags,
         isNSFW,
         isSpoiler,
-        community: getCommunityIdFromName(communities, selectedCommunity),
+        community: communityId,
         image: imagePreview,
       };
       const response = await postsService.createPost(postData);
       console.log("Post created successfully", response);
+
+      toast({
+        title: "Success",
+        description: "Your post has been created successfully",
+      });
+
+      resetForm();
+      onOpenChange(false);
+
+      // Call the callback to refresh posts
+      if (onPostCreated) {
+        onPostCreated();
+      }
     } catch (error) {
       console.error("Error while creating post", error);
+      toast({
+        title: "Error",
+        description: "Failed to create post. Please try again.",
+        variant: "destructive",
+      });
     }
-    // resetForm();
   };
 
   const getAllCommunities = async () => {

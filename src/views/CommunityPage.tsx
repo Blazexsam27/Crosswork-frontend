@@ -13,66 +13,31 @@ import { NavLink, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { FeedCard } from "@/components/MainFeed/FeedCard";
 import communityService from "@/services/community.service";
-import { getFromLocalStorage } from "@/utils/webstorage.utls";
+import {
+  getFromLocalStorage,
+  setInLocalStorage,
+} from "@/utils/webstorage.utls";
 import type { CommunityType } from "@/types/community/communityTypes";
 import postsService from "@/services/posts.service";
 import type { PostType } from "@/types/post/post.types";
-
-// Mock community data
-const communityData = {
-  id: "computer-science",
-  name: "Computer Science Hub",
-  icon: "💻",
-  coverImage: "/abstract-tech-pattern.png",
-  description:
-    "A community for computer science students to share knowledge, projects, and career advice",
-  members: 45200,
-  online: 1234,
-  createdDate: "Jan 2023",
-  category: "Technology",
-  isJoined: false,
-  rules: [
-    {
-      title: "Be respectful",
-      description:
-        "Treat all members with respect. No harassment, hate speech, or personal attacks.",
-    },
-    {
-      title: "Stay on topic",
-      description:
-        "Keep posts relevant to computer science, programming, and related fields.",
-    },
-    {
-      title: "No spam",
-      description:
-        "Don't post promotional content, advertisements, or repetitive posts.",
-    },
-    {
-      title: "Help others learn",
-      description:
-        "When answering questions, be patient and provide helpful explanations.",
-    },
-  ],
-  moderators: [
-    { name: "sarah_dev", avatar: "👩‍💻" },
-    { name: "mike_code", avatar: "👨‍💻" },
-    { name: "alex_tech", avatar: "🧑‍💻" },
-  ],
-};
-
-// Mock posts data
+import userService from "@/services/user.service";
+import CreatePostForm from "@/components/CommunityPage/CreatePostForm";
+import { useToast } from "@/hooks/use-toast";
 
 export default function CommunityPage() {
-  const [isJoined, setIsJoined] = useState(communityData.isJoined);
   const [isNotified, setIsNotified] = useState(false);
   const [activeTab, setActiveTab] = useState<"posts" | "about">("posts");
   const [sortBy, setSortBy] = useState("hot");
-  const [communityPosts, setCommunityPosts] = useState([]);
+  const [communityPosts, setCommunityPosts] = useState<PostType[]>([]);
+  const [createPostOpen, setCreatePostOpen] = useState(false);
+  const [userData, setUserData] = useState(getFromLocalStorage("user"));
 
   const { id } = useParams();
-  const userData = getFromLocalStorage("user");
+  const { toast } = useToast();
 
   const [comm, setComm] = useState<CommunityType | null>(null);
+
+  const isJoined = userData?.communities?.includes(id);
 
   const getCommunityById = async () => {
     if (!id) return;
@@ -82,6 +47,11 @@ export default function CommunityPage() {
       setComm(comm);
     } catch (error) {
       console.error("Error while getting community details", error);
+      toast({
+        title: "Error",
+        description: "Failed to load community details",
+        variant: "destructive",
+      });
     }
   };
 
@@ -90,11 +60,58 @@ export default function CommunityPage() {
 
     try {
       const posts = await postsService.getPostsByCommunityId(id);
-      console.log("posts", posts);
+      console.log("Posts", posts);
       setCommunityPosts(posts);
     } catch (error) {
       console.error("Error while getting community posts", error);
     }
+  };
+
+  const handleJoinLeave = async () => {
+    if (!id) return;
+
+    try {
+      if (isJoined) {
+        const updatedUser = await userService.leaveCommunity(id);
+        setUserData(updatedUser);
+        setInLocalStorage("user", updatedUser);
+        toast({
+          title: "Left community",
+          description: `You have left ${comm?.communityName}`,
+        });
+      } else {
+        const updatedUser = await userService.joinCommunity(id);
+        setUserData(updatedUser);
+        setInLocalStorage("user", updatedUser);
+        toast({
+          title: "Joined community",
+          description: `You have joined ${comm?.communityName}`,
+        });
+      }
+      // Refresh community data to update member count
+      getCommunityById();
+    } catch (error) {
+      console.error("Error while joining/leaving community", error);
+      toast({
+        title: "Error",
+        description: "Failed to update community membership",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handlePostCreated = () => {
+    getCommunityPosts();
+    setCreatePostOpen(false);
+  };
+
+  const handleShare = () => {
+    const url = window.location.href;
+    navigator.clipboard.writeText(url);
+    toast({
+      title: "Link copied",
+      description: "Community link copied to clipboard",
+    });
   };
 
   useEffect(() => {
@@ -163,22 +180,23 @@ export default function CommunityPage() {
             {/* Action Buttons */}
             <div className="flex flex-wrap gap-2">
               <Button
-                onClick={() => setIsJoined(!isJoined)}
+                onClick={handleJoinLeave}
                 className={
-                  userData?.communities?.includes(id)
+                  isJoined
                     ? "bg-secondary text-secondary-foreground hover:bg-secondary/80"
                     : ""
                 }
               >
-                {userData?.communities?.includes(id)
-                  ? "Joined"
-                  : "Join Community"}
+                {isJoined ? "Joined" : "Join Community"}
               </Button>
               <Button
                 variant="outline"
                 size="icon"
                 onClick={() => setIsNotified(!isNotified)}
                 className={isNotified ? "bg-accent" : ""}
+                title={
+                  isNotified ? "Disable notifications" : "Enable notifications"
+                }
               >
                 {isNotified ? (
                   <Bell className="h-4 w-4" />
@@ -186,10 +204,15 @@ export default function CommunityPage() {
                   <BellOff className="h-4 w-4" />
                 )}
               </Button>
-              <Button variant="outline" size="icon">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleShare}
+                title="Share community"
+              >
                 <Share2 className="h-4 w-4" />
               </Button>
-              <Button variant="outline" size="icon">
+              <Button variant="outline" size="icon" title="More options">
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </div>
@@ -232,12 +255,27 @@ export default function CommunityPage() {
                 <div className="mb-4 rounded-lg border border-border bg-card p-4">
                   <div className="flex items-center gap-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-accent/20 text-xl">
-                      👤
+                      {userData?.profilePic ? (
+                        <img
+                          src={userData.profilePic}
+                          alt={userData.name}
+                          className="h-10 w-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        "👤"
+                      )}
                     </div>
-                    <button className="flex-1 rounded-full border border-border bg-muted/50 px-4 py-2.5 text-left text-sm text-muted-foreground hover:bg-muted transition-colors">
+                    <button
+                      onClick={() => setCreatePostOpen(true)}
+                      className="flex-1 rounded-full border border-border bg-muted/50 px-4 py-2.5 text-left text-sm text-muted-foreground hover:bg-muted transition-colors"
+                    >
                       Create a post...
                     </button>
-                    <Button size="icon" className="rounded-full">
+                    <Button
+                      size="icon"
+                      className="rounded-full"
+                      onClick={() => setCreatePostOpen(true)}
+                    >
                       <Plus className="h-5 w-5" />
                     </Button>
                   </div>
@@ -259,9 +297,23 @@ export default function CommunityPage() {
 
                 {/* Posts Feed */}
                 <div className="space-y-4">
-                  {communityPosts.map(
-                    (post: PostType) =>
-                      comm && <FeedCard key={post._id} post={post} />
+                  {communityPosts.length > 0 ? (
+                    communityPosts.map((post: PostType) => (
+                      <FeedCard key={post._id} post={post} />
+                    ))
+                  ) : (
+                    <div className="rounded-lg border border-border bg-card p-8 text-center">
+                      <p className="text-muted-foreground">
+                        No posts yet. Be the first to post!
+                      </p>
+                      <Button
+                        className="mt-4"
+                        onClick={() => setCreatePostOpen(true)}
+                      >
+                        <Plus className="mr-2 h-4 w-4" />
+                        Create Post
+                      </Button>
+                    </div>
                   )}
                 </div>
               </>
@@ -319,7 +371,9 @@ export default function CommunityPage() {
                   <div className="space-y-3">
                     {comm?.moderators.map((mod) => (
                       <div key={mod.name} className="flex items-center gap-3">
-                        <span className="text-2xl">{mod.profilePic}</span>
+                        <div className="-mt-8 flex h-20 w-20 items-center justify-center rounded-full border-4 border-card bg-gradient-to-br from-primary/20 to-accent/20 text-4xl shadow-lg sm:h-24 sm:w-24 sm:text-5xl">
+                          <img src={mod.profilePic} alt="" />
+                        </div>
                         <span className="text-sm font-medium text-foreground">
                           u/{mod.name}
                         </span>
@@ -361,11 +415,6 @@ export default function CommunityPage() {
                     </span>
                   </div>
                 </div>
-
-                <Button className="mt-4 w-full">
-                  <Plus className="mr-2 h-4 w-4" />
-                  Create Post
-                </Button>
               </div>
 
               {/* Rules Card */}
@@ -402,7 +451,9 @@ export default function CommunityPage() {
                       key={mod.name}
                       className="flex items-center gap-2 text-sm"
                     >
-                      <span className="text-lg">{mod.profilePic}</span>
+                      <div className=" flex h-8 w-8 items-center justify-center rounded-full border-4 border-card bg-gradient-to-br from-primary/20 to-accent/20 text-4xl shadow-lg sm:h-10 sm:w-10 sm:text-5xl">
+                        <img src={mod.profilePic} alt="" />
+                      </div>
                       <span className="text-foreground">u/{mod.name}</span>
                     </div>
                   ))}
@@ -415,6 +466,17 @@ export default function CommunityPage() {
           </aside>
         </div>
       </div>
+
+      {/* Create Post Dialog */}
+      {comm && (
+        <CreatePostForm
+          communityName={comm?.communityName}
+          communityId={comm?._id}
+          open={createPostOpen}
+          onOpenChange={setCreatePostOpen}
+          onPostCreated={handlePostCreated}
+        />
+      )}
     </div>
   );
 }

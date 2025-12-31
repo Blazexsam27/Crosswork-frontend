@@ -21,6 +21,7 @@ import MainFeed from "./views/MainFeed";
 import CreateCommunity from "./views/CreateCommunity";
 import CommunityPage from "./views/CommunityPage";
 import PatchNotePopup from "./components/widgets/PatchNotePopup";
+import { Toaster } from "./components/ui/sonner";
 
 // Dynamically imported components
 const Home = lazy(() => import("./views/Home"));
@@ -88,6 +89,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
+        <Toaster />
       </BrowserRouter>
     </Provider>
   );

@@ -10,7 +10,7 @@ import { useAppDispatch } from "@/hooks/hooks";
 import notificationService from "@/services/notification.service";
 import { Button } from "@/components/ui/button";
 import connectService from "@/services/connect.service";
-import { toast, ToastContainer } from "react-toastify";
+import { useToast } from "@/hooks/use-toast";
 import DetailsSection from "@/components/UserProfile/DetailsSection";
 import OtherSection from "@/components/UserProfile/OtherSection";
 const mockRooms: Room[] = [
@@ -45,6 +45,7 @@ const mockRooms: Room[] = [
 
 export default function ProfileView() {
   const dispatch = useAppDispatch();
+  const { toast } = useToast();
   const [activeSection, setActiveSection] = useState("details");
   const [invites, setInvites] = useState<UserProfile[]>([
     {
@@ -173,20 +174,20 @@ export default function ProfileView() {
   };
 
   const renderHistorySection = () => (
-    <div className="bg-white rounded-2xl shadow-lg p-6">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Room History</h2>
+    <div className="bg-card rounded-2xl shadow-lg p-6 border border-border">
+      <h2 className="text-2xl font-bold text-foreground mb-6">Room History</h2>
       <div className="space-y-4">
         {mockRooms.map((room) => (
           <div
             key={room.id}
-            className="border border-gray-200 rounded-sm p-4 hover:shadow-md transition-shadow"
+            className="border border-border rounded-lg p-4 hover:shadow-md transition-all bg-card"
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-foreground mb-2">
                   {room.title}
                 </h3>
-                <div className="flex items-center space-x-4 text-sm text-gray-600">
+                <div className="flex items-center flex-wrap gap-4 text-sm text-muted-foreground">
                   <span className="flex items-center">
                     <BookOpen className="w-4 h-4 mr-1" />
                     {room.subject}
@@ -226,56 +227,108 @@ export default function ProfileView() {
       // Handle accept invite
       try {
         const response = await connectService.acceptRequest(_id, userData._id);
-        if (response) toast("Invitation Accepted !");
+        if (response) {
+          toast({
+            title: "Success",
+            description: "Invitation accepted!",
+          });
+          getPendingInvitesOfUser();
+        }
       } catch (error) {
         console.error("Error while accepting invite:", error);
+        toast({
+          title: "Error",
+          description: "Failed to accept invitation",
+          variant: "destructive",
+        });
       }
     }
 
     async function handleDeclineInvite(_id: string): Promise<void> {
       try {
         const response = await connectService.declineRequest(_id, userData._id);
-        if (response) toast("Invitation Declined!");
+        if (response) {
+          toast({
+            title: "Success",
+            description: "Invitation declined",
+          });
+          getPendingInvitesOfUser();
+        }
       } catch (error) {
         console.error("Error while declining invite:", error);
+        toast({
+          title: "Error",
+          description: "Failed to decline invitation",
+          variant: "destructive",
+        });
       }
     }
 
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Notifications</h2>
-        <ToastContainer />
+      <div className="bg-card rounded-2xl shadow-lg p-6 border border-border">
+        <h2 className="text-2xl font-bold text-foreground mb-6">
+          Notifications
+        </h2>
         {invites.length > 0 ? (
           <div className="space-y-4">
             {invites.map((invite) => (
               <div
                 key={invite._id}
-                className="border border-gray-200 rounded-sm p-4"
+                className="border border-border rounded-lg p-4 bg-card hover:shadow-md transition-shadow"
               >
-                <p>
-                  You got a connection request from: <b>{invite.name}</b>
-                </p>
-                <div className="flex justify-end items-center gap-2">
-                  <Button
-                    variant={"gradient"}
-                    onClick={() => handleAcceptInvite(invite._id)}
-                  >
-                    Accept
-                  </Button>
-                  <Button
-                    className="bg-red-700"
-                    onClick={() => handleDeclineInvite(invite._id)}
-                  >
-                    Decline
-                  </Button>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center">
+                      {invite.profilePic ? (
+                        <img
+                          src={invite.profilePic}
+                          alt={invite.name}
+                          className="w-full h-full rounded-full object-cover"
+                        />
+                      ) : (
+                        <span className="text-xl">
+                          {invite.name.charAt(0).toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-foreground font-medium">
+                        <b>{invite.name}</b> sent you a connection request
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {invite.email}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => handleAcceptInvite(invite._id)}
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => handleDeclineInvite(invite._id)}
+                    >
+                      Decline
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-600">
-            You don&apos;t have any notifications yet.
-          </p>
+          <div className="text-center py-12">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
+              <Users className="w-8 h-8 text-muted-foreground" />
+            </div>
+            <p className="text-muted-foreground">
+              You don&apos;t have any notifications yet.
+            </p>
+          </div>
         )}
       </div>
     );
@@ -286,13 +339,13 @@ export default function ProfileView() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-8">
+    <div className="min-h-screen bg-background py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Left Sidebar - Navigation */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-24">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-card rounded-2xl shadow-lg p-6 sticky top-24 border border-border">
+              <h2 className="text-lg font-semibold text-foreground mb-4">
                 Profile Menu
               </h2>
               <nav className="space-y-2">
@@ -302,10 +355,10 @@ export default function ProfileView() {
                     <button
                       key={item.id}
                       onClick={() => setActiveSection(item.id)}
-                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-sm text-left transition-all duration-200 ${
+                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-200 ${
                         activeSection === item.id
-                          ? "bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-                          : "text-gray-700 hover:bg-gray-100"
+                          ? "bg-primary text-primary-foreground shadow-md"
+                          : "text-foreground hover:bg-accent"
                       }`}
                     >
                       <Icon className="w-5 h-5" />
