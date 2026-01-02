@@ -60,6 +60,7 @@ export default function Home() {
           <CreatePostForm
             open={showPostPopup}
             onOpenChange={(value) => setShowPostPopup(value)}
+            communityId={""}
           />
           {/* Main Feed */}
           <main className="lg:col-span-6">

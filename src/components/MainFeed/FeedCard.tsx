@@ -28,8 +28,8 @@ import { cn } from "@/lib/utils";
 
 export function FeedCard({ post }: { post: PostType }) {
   const [userVote, setUserVote] = useState<number>(0); // -1, 0, or 1
-  const [upvotes, setUpvotes] = useState(post.upvotes);
-  const [downvotes, setDownvotes] = useState(post.downvotes);
+  const [, setUpvotes] = useState(post.upvotes);
+  const [, setDownvotes] = useState(post.downvotes);
   const [score, setScore] = useState(post.score);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

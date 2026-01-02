@@ -42,7 +42,6 @@ import communityService from "@/services/community.service";
 import type { CommunityType } from "@/types/community/communityTypes";
 import { getFromLocalStorage } from "@/utils/webstorage.utls";
 import postsService from "@/services/posts.service";
-import { getCommunityIdFromName } from "@/utils/community.utils";
 import { useToast } from "@/hooks/use-toast";
 
 interface CreatePostFormProps {
