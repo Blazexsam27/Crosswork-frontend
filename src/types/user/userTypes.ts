@@ -12,6 +12,8 @@ export type UserType = {
   createdAt: Date;
   updatedAt: Date;
   profilePic: string;
+  bookmarkedPosts?: string[];
+  communities?: string[];
 };
 
 export interface Student {

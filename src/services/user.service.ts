@@ -2,9 +2,11 @@ import axios from "../config/axios.config";
 import type { UserProfile } from "@/types/profile/profileTypes";
 
 class UserService {
+  endpoint = "/api/users";
+
   getUser = async () => {
     try {
-      const response = await axios.get(`/api/users/get-user`);
+      const response = await axios.get(`${this.endpoint}/get-user`);
       return response.data;
     } catch (error: any) {
       throw new Error(error);
@@ -13,7 +15,7 @@ class UserService {
 
   getAllUsers = async () => {
     try {
-      const response = await axios.get("/api/users/get-all-users");
+      const response = await axios.get(`${this.endpoint}/get-all-users`);
       return response.data;
     } catch (error: any) {
       throw new Error(error);
@@ -23,7 +25,7 @@ class UserService {
   getAllConnections = async (userId: string) => {
     try {
       const response = await axios.get(
-        `/api/users/get-all-connections/${userId}`
+        `${this.endpoint}/get-all-connections/${userId}`
       );
       return response.data;
     } catch (error: any) {
@@ -33,7 +35,10 @@ class UserService {
 
   updateUser = async (updatedData: Partial<UserProfile>) => {
     try {
-      const response = await axios.put("/api/users/update-user", updatedData);
+      const response = await axios.put(
+        `${this.endpoint}/update-user`,
+        updatedData
+      );
       return response.data;
     } catch (error: any) {
       throw new Error(error);
@@ -43,7 +48,7 @@ class UserService {
   joinCommunity = async (communityId: string) => {
     try {
       const response = await axios.post(
-        `/api/users/join-community/${communityId}`
+        `${this.endpoint}/join-community/${communityId}`
       );
       return response.data;
     } catch (error: any) {
@@ -54,8 +59,36 @@ class UserService {
   leaveCommunity = async (communityId: string) => {
     try {
       const response = await axios.post(
-        `/api/users/leave-community/${communityId}`
+        `${this.endpoint}/leave-community/${communityId}`
       );
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
+  bookmarkPost = async (postId: string) => {
+    try {
+      const response = await axios.post(`${this.endpoint}/bookmark/${postId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
+
+  unbookmarkPost = async (postId: string) => {
+    try {
+      const response = await axios.delete(
+        `${this.endpoint}/bookmark/${postId}`
+      );
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
+
+  getBookmarkedPosts = async () => {
+    try {
+      const response = await axios.get(`${this.endpoint}/bookmarks`);
       return response.data;
     } catch (error: any) {
       throw new Error(error);

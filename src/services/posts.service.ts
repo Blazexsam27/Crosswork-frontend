@@ -67,6 +67,37 @@ class PostsService {
       throw new Error(error);
     }
   }
+
+  async votePost(postId: string, value: number) {
+    try {
+      const response = await axios.post(`${this.endpoint}/${postId}/vote`, {
+        value,
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+
+  async getUserVoteForPost(postId: string) {
+    try {
+      const response = await axios.get(`${this.endpoint}/${postId}/vote`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
+
+  async getUserVotesForPosts(postIds: string[]) {
+    try {
+      const response = await axios.post(`${this.endpoint}/votes/bulk`, {
+        postIds,
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
 }
 
 export default new PostsService();

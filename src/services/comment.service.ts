@@ -51,6 +51,15 @@ class CommentService {
       throw new Error(error);
     }
   }
+
+  async getCommentsByPostId(postId: string) {
+    try {
+      const response = await axios.get(`${this.endpoint}/post/${postId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
 }
 
 export default new CommentService();

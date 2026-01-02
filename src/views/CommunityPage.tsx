@@ -22,6 +22,7 @@ import postsService from "@/services/posts.service";
 import type { PostType } from "@/types/post/post.types";
 import userService from "@/services/user.service";
 import CreatePostForm from "@/components/CommunityPage/CreatePostForm";
+import CommunitySettings from "@/components/CommunityPage/CommunitySettings";
 import { useToast } from "@/hooks/use-toast";
 
 export default function CommunityPage() {
@@ -30,6 +31,7 @@ export default function CommunityPage() {
   const [sortBy, setSortBy] = useState("hot");
   const [communityPosts, setCommunityPosts] = useState<PostType[]>([]);
   const [createPostOpen, setCreatePostOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [userData, setUserData] = useState(getFromLocalStorage("user"));
 
   const { id } = useParams();
@@ -38,6 +40,9 @@ export default function CommunityPage() {
   const [comm, setComm] = useState<CommunityType | null>(null);
 
   const isJoined = userData?.communities?.includes(id);
+  const isModerator = comm?.moderators?.some(
+    (mod: any) => mod._id === userData?._id || mod === userData?._id
+  );
 
   const getCommunityById = async () => {
     if (!id) return;
@@ -114,6 +119,27 @@ export default function CommunityPage() {
     });
   };
 
+  const handleSettingsSave = async (formData: FormData) => {
+    if (!id) return;
+
+    try {
+      await communityService.updateCommunity(id, formData);
+      toast({
+        title: "Success",
+        description: "Community settings updated successfully",
+      });
+      // Refresh community data
+      getCommunityById();
+    } catch (error) {
+      console.error("Error updating community:", error);
+      toast({
+        title: "Error",
+        description: "Failed to update community settings",
+        variant: "destructive",
+      });
+    }
+  };
+
   useEffect(() => {
     getCommunityById();
     getCommunityPosts();
@@ -122,8 +148,15 @@ export default function CommunityPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Cover Image */}
-      <div className="relative h-32 w-full bg-gradient-to-r from-primary/20 via-accent/20 to-primary/20 sm:h-48">
-        <div className="absolute inset-0 bg-[url('/abstract-tech-pattern.png')] bg-cover bg-center opacity-50" />
+      <div
+        className="relative h-32 w-full sm:h-48"
+        style={{
+          background: comm?.communityCoverImage
+            ? getCoverGradient(comm.communityCoverImage)
+            : "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+        }}
+      >
+        <div className="absolute inset-0 opacity-50" />
       </div>
 
       {/* Community Header */}
@@ -212,6 +245,15 @@ export default function CommunityPage() {
               >
                 <Share2 className="h-4 w-4" />
               </Button>
+              {isModerator && (
+                <Button
+                  variant="outline"
+                  onClick={() => setSettingsOpen(true)}
+                  title="Community settings"
+                >
+                  Settings
+                </Button>
+              )}
               <Button variant="outline" size="icon" title="More options">
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
@@ -477,6 +519,31 @@ export default function CommunityPage() {
           onPostCreated={handlePostCreated}
         />
       )}
+
+      {/* Community Settings Dialog */}
+      {comm && isModerator && (
+        <CommunitySettings
+          open={settingsOpen}
+          onOpenChange={setSettingsOpen}
+          community={comm}
+          onSave={handleSettingsSave}
+        />
+      )}
     </div>
   );
 }
+
+// Helper function to get gradient by ID
+const getCoverGradient = (id: string) => {
+  const gradients: Record<string, string> = {
+    sunset: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+    ocean: "linear-gradient(135deg, #2E3192 0%, #1BFFFF 100%)",
+    fire: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+    forest: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+    candy: "linear-gradient(135deg, #fa709a 0%, #fee140 100%)",
+    aurora: "linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)",
+    emerald: "linear-gradient(135deg, #d299c2 0%, #fef9d7 100%)",
+    royal: "linear-gradient(135deg, #667eea 0%, #f093fb 100%)",
+  };
+  return gradients[id] || gradients.sunset;
+};

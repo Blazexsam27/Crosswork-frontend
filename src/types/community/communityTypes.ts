@@ -20,6 +20,10 @@ export type CommunityType = {
   updatedAt: string;
 };
 
+export type CommunityUpdateType = Omit<Partial<CommunityRule>, "rules"> & {
+  rules?: CommunityRule[];
+};
+
 export type CommunityRule = {
   title: string;
   body: string;
