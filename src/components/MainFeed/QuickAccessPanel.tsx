@@ -1,11 +1,14 @@
 import { TrendingUp } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import userService from "@/services/user.service";
 
-const myCommunities = [
-  { id: 1, name: "Computer Science", icon: "💻", members: "45.2k" },
-  { id: 2, name: "Business Students", icon: "📊", members: "32.1k" },
-  { id: 3, name: "Study Tips", icon: "📚", members: "78.9k" },
-  { id: 4, name: "Engineering", icon: "⚙️", members: "56.3k" },
-];
+interface Community {
+  _id: string;
+  communityName: string;
+  communityIcon?: string;
+  membersCount: number;
+}
 
 const savedPosts = [
   {
@@ -40,6 +43,34 @@ export function QuickAccessPanel({
 }: {
   selectedQuickAccessTab: "communities" | "saved" | "trending" | null;
 }) {
+  const [myCommunities, setMyCommunities] = useState<Community[]>([]);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (selectedQuickAccessTab === "communities") {
+      fetchUserCommunities();
+    }
+  }, [selectedQuickAccessTab]);
+
+  const fetchUserCommunities = async () => {
+    try {
+      setLoading(true);
+      const communities = await userService.getUserCommunities();
+      setMyCommunities(communities);
+    } catch (error) {
+      console.error("Failed to fetch user communities:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatMemberCount = (count: number): string => {
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}k`;
+    }
+    return count.toString();
+  };
   return (
     <div className="my-4 rounded-lg border border-border bg-card shadow-sm">
       {/* Content */}
@@ -47,24 +78,43 @@ export function QuickAccessPanel({
         {selectedQuickAccessTab === "communities" && (
           <div className="space-y-2 overflow-y-auto max-h-80">
             <p className="font-semibold text-foreground">My Communities</p>
-            {myCommunities.map((community) => (
-              <button
-                key={community.id}
-                className="flex w-full items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-accent text-xl">
-                  {community.icon}
-                </div>
-                <div className="flex-1 text-left">
-                  <p className="font-medium text-foreground">
-                    c/{community.name}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    {community.members} members
-                  </p>
-                </div>
-              </button>
-            ))}
+            {loading ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                Loading communities...
+              </p>
+            ) : myCommunities.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-4">
+                No communities yet. Join or create one to get started!
+              </p>
+            ) : (
+              myCommunities.map((community) => (
+                <button
+                  key={community._id}
+                  onClick={() => navigate(`/community-page/${community._id}`)}
+                  className="flex w-full items-center gap-3 rounded-lg p-3 transition-colors hover:bg-accent"
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-primary/20 to-accent text-xl overflow-hidden">
+                    {community.communityIcon ? (
+                      <img
+                        src={community.communityIcon}
+                        alt={community.communityName}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span>🏘️</span>
+                    )}
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="font-medium text-foreground">
+                      c/{community.communityName}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {formatMemberCount(community.membersCount)} members
+                    </p>
+                  </div>
+                </button>
+              ))
+            )}
           </div>
         )}
 

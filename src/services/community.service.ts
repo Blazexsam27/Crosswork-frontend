@@ -59,6 +59,17 @@ class CommunityService {
       throw new Error(error);
     }
   };
+
+  searchCommunities = async (query: string) => {
+    try {
+      const response = await axios.get(`${this.endpoint}/search`, {
+        params: { q: query },
+      });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
 }
 
 export default new CommunityService();

@@ -95,9 +95,17 @@ function Navbar() {
                     onClick={toggleDropdown}
                     className="cursor-pointer flex items-center space-x-2 focus:outline-none"
                   >
-                    <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
-                      P
-                    </div>
+                    {user?.profilePic ? (
+                      <img
+                        src={user?.profilePic}
+                        alt="User Avatar"
+                        className="w-8 h-8 rounded-full relative top-[6px]"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                        {user?.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                   </button>
 
                   {/* Dropdown Menu */}
