@@ -13,6 +13,15 @@ class UserService {
     }
   };
 
+  getUserById = async (userId: string) => {
+    try {
+      const response = await axios.get(`${this.endpoint}/get-user/${userId}`);
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  };
+
   getAllUsers = async () => {
     try {
       const response = await axios.get(`${this.endpoint}/get-all-users`);

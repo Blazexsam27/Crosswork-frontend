@@ -26,6 +26,7 @@ import { Toaster } from "./components/ui/sonner";
 // Dynamically imported components
 const Home = lazy(() => import("./views/Home"));
 const UserProfile = lazy(() => import("./views/UserProfile"));
+const PublicProfile = lazy(() => import("./views/PublicProfile"));
 const Forums = lazy(() => import("./views/Forums"));
 const Connect = lazy(() => import("./views/Connect"));
 const VideoRoom = lazy(() => import("./views/VideoRoom"));
@@ -71,6 +72,7 @@ function App() {
             <Route path="/oauth-error" element={<SignupForm />}></Route>
             <Route path="/about" element={<About />} />
             <Route path="/community-page/:id" element={<CommunityPage />} />
+            <Route path="/profile/:userId" element={<PublicProfile />} />
             <Route element={<ProtectedRoute />}>
               <Route path="/" element={<Home />} />
               <Route path="/profile" element={<UserProfile />} />
