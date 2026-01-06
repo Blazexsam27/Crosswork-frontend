@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   User,
   Calendar,
-  MapPin,
   Mail,
   Globe,
   Users,
